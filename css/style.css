@@ -1,0 +1,526 @@
+/* =========================================================
+   ПАЛІТРА
+========================================================= */
+
+:root {
+    --dark: #37353E;
+    --dark-light: #44444E;
+    --accent: #715A5A;
+    --light: #D3DAD9;
+    --white: #ffffff;
+    --background: #37353E;
+}
+
+
+/* =========================================================
+   ЗАГАЛЬНІ НАЛАШТУВАННЯ
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--background) !important;
+    color: var(--light) !important;
+}
+
+
+/* =========================================================
+   ШАПКА
+========================================================= */
+
+header {
+    width: 100%;
+    background: var(--dark) !important;
+    color: var(--light) !important;
+    border-bottom: 1px solid var(--dark-light) !important;
+}
+
+/* Bootstrap не повинен робити контейнер білим */
+header .container,
+header .container-fluid {
+    background: transparent !important;
+}
+
+/* Верхня частина header */
+header a {
+    color: var(--light) !important;
+}
+
+header a:hover {
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   ЛОГОТИП
+========================================================= */
+
+.logo {
+    display: inline-block;
+    color: var(--light) !important;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.logo:hover {
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   ПОШУК
+========================================================= */
+
+#search {
+    width: 100%;
+    min-height: 52px;
+
+    background-color: var(--dark-light) !important;
+    border: 2px solid var(--dark-light) !important;
+
+    color: var(--white) !important;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+    padding: 10px 16px;
+
+    outline: none;
+}
+
+#search::placeholder {
+    color: var(--light) !important;
+    opacity: 0.7;
+}
+
+#search:focus {
+    background-color: var(--dark-light) !important;
+    color: var(--white) !important;
+
+    border-color: var(--accent) !important;
+
+    box-shadow: 0 0 0 0.2rem rgba(113, 90, 90, 0.35) !important;
+}
+
+
+/* =========================================================
+   НАВІГАЦІЯ
+========================================================= */
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+
+    overflow-x: auto;
+
+    padding: 0;
+}
+
+nav a {
+    color: var(--light) !important;
+    background: transparent !important;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    font-size: 16px;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   КНОПКИ
+========================================================= */
+
+.btn-orange,
+.buy-button,
+.cart {
+    background-color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    color: var(--white) !important;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-orange:hover,
+.buy-button:hover,
+.cart:hover {
+    background-color: var(--dark-light) !important;
+    border-color: var(--dark-light) !important;
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   КОШИК
+========================================================= */
+
+.cart {
+    min-height: 52px;
+
+    border-radius: 8px !important;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cart i,
+.cart svg {
+    color: var(--white) !important;
+}
+
+.cart .badge {
+    background-color: #222 !important;
+    color: var(--white) !important;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ОСНОВНА ЧАСТИНА
+========================================================= */
+
+main {
+    min-height: calc(100vh - 130px);
+
+    background-color: var(--dark) !important;
+    color: var(--light) !important;
+}
+
+
+/* =========================================================
+   ЗАГОЛОВКИ
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--light) !important;
+}
+
+h2 {
+    font-size: 34px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   СОРТУВАННЯ
+========================================================= */
+
+#sort {
+    min-height: 42px;
+
+    background-color: var(--dark-light) !important;
+    border: 1px solid var(--accent) !important;
+
+    color: var(--light) !important;
+
+    border-radius: 6px;
+}
+
+#sort option {
+    background-color: var(--dark-light);
+    color: var(--light);
+}
+
+#sort:focus {
+    background-color: var(--dark-light) !important;
+    color: var(--white) !important;
+
+    border-color: var(--light) !important;
+
+    box-shadow:
+        0 0 0 0.2rem rgba(211, 218, 217, 0.15) !important;
+}
+
+
+/* =========================================================
+   КАРТКИ ТОВАРІВ
+========================================================= */
+
+.card {
+    height: 100%;
+
+    background-color: var(--dark-light) !important;
+    color: var(--light) !important;
+
+    border: 1px solid var(--accent) !important;
+    border-radius: 8px !important;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================================================
+   ВМІСТ КАРТКИ
+========================================================= */
+
+.card-body {
+    background-color: var(--dark-light) !important;
+    color: var(--light) !important;
+
+    padding: 18px !important;
+}
+
+.card-title {
+    color: var(--light) !important;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.card-text {
+    color: var(--light) !important;
+    opacity: 0.85;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   ФОТО ТОВАРУ
+========================================================= */
+
+.product-image {
+    display: block;
+
+    width: 100%;
+    height: 220px;
+
+    object-fit: cover;
+
+    background-color: var(--dark-light);
+
+    border: 0;
+}
+
+
+/* =========================================================
+   РЕЙТИНГ
+========================================================= */
+
+.rating {
+    color: var(--light) !important;
+
+    font-size: 14px;
+}
+
+.rating .stars,
+.rating i {
+    color: #ffd43b !important;
+}
+
+.rating span {
+    color: var(--light) !important;
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   ЦІНА
+========================================================= */
+
+.price {
+    color: var(--white) !important;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    margin-top: 12px;
+}
+
+
+/* =========================================================
+   КНОПКА "КУПИТИ"
+========================================================= */
+
+.buy-button {
+    width: 100%;
+
+    min-height: 44px;
+
+    border-radius: 6px !important;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.buy-button:hover {
+    background-color: var(--dark) !important;
+    border-color: var(--light) !important;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    width: 100%;
+
+    background-color: var(--dark) !important;
+    color: var(--light) !important;
+
+    border-top: 1px solid var(--dark-light) !important;
+}
+
+footer a {
+    color: var(--light) !important;
+}
+
+footer a:hover {
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   BOOTSTRAP OVERRIDES
+========================================================= */
+
+/* Bootstrap text utilities */
+.text-dark {
+    color: var(--light) !important;
+}
+
+.text-light {
+    color: var(--light) !important;
+}
+
+.text-white {
+    color: var(--white) !important;
+}
+
+/* Bootstrap background utilities */
+.bg-white {
+    background-color: var(--dark) !important;
+}
+
+.bg-light {
+    background-color: var(--dark-light) !important;
+}
+
+.bg-dark {
+    background-color: var(--dark) !important;
+}
+
+
+/* =========================================================
+   АДАПТИВНІСТЬ
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .logo {
+        font-size: 22px;
+    }
+
+    nav {
+        gap: 20px;
+    }
+
+    h2 {
+        font-size: 30px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 12px 0;
+    }
+
+    .logo {
+        font-size: 21px;
+    }
+
+    #search {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    .cart {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    h2 {
+        font-size: 27px;
+    }
+
+    .product-image {
+        height: 240px;
+    }
+}
+
+
+@media (max-width: 576px) {
+
+    main {
+        padding-top: 30px !important;
+    }
+
+    nav {
+        gap: 16px;
+        padding-bottom: 5px;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+
+    .product-image {
+        height: 250px;
+    }
+
+    .logo {
+        font-size: 21px;
+    }
+
+    .card-body {
+        padding: 15px !important;
+    }
+
+    .price {
+        font-size: 21px;
+    }
+}
