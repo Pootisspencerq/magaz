@@ -26,7 +26,7 @@
 
             <!-- Логотип -->
             <div class="col-12 col-lg-3">
-                <a href="#" class="logo">
+                <a href="index.html" class="logo">
                     МІЙ МАГАЗИН
                 </a>
             </div>
@@ -43,7 +43,10 @@
 
             <!-- Кошик -->
             <div class="col-12 col-lg-3 text-lg-end">
-                <button class="btn btn-orange btn-lg w-100">
+                <button
+                    id="cartButton"
+                    class="btn btn-orange btn-lg w-100"
+                >
                     🛒 Кошик
                     <span id="cartCount" class="badge bg-dark">0</span>
                 </button>
@@ -82,9 +85,10 @@
     <div id="products" class="row g-4">
 
         <!-- Товар -->
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Lenovo IdeaPad 3"
-             data-price="24999">
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
+                data-id="1"
+                data-name="Lenovo IdeaPad 3"
+                data-price="24999">
 
             <div class="card h-100">
 
@@ -128,10 +132,11 @@
         </div>
 
 
-        <!-- Товар -->
+        <!-- Samsung -->
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Samsung Galaxy A55"
-             data-price="18999">
+            data-id="2"
+            data-name="Samsung Galaxy A55"
+            data-price="18999">
 
             <div class="card h-100">
 
@@ -175,10 +180,11 @@
         </div>
 
 
-        <!-- Товар -->
+        <!-- Sony -->
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Sony WH-1000XM5"
-             data-price="9499">
+            data-id="3"
+            data-name="Sony WH-1000XM5"
+            data-price="9499">
 
             <div class="card h-100">
 
@@ -222,10 +228,11 @@
         </div>
 
 
-        <!-- Товар -->
+        <!-- Logitech -->
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Logitech G Pro Keyboard"
-             data-price="3899">
+            data-id="4"
+            data-name="Logitech G Pro Keyboard"
+            data-price="3899">
 
             <div class="card h-100">
 
@@ -269,10 +276,11 @@
         </div>
 
 
-        <!-- Товар -->
+        <!-- Apple -->
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Apple AirPods Pro"
-             data-price="7999">
+            data-id="5"
+            data-name="Apple AirPods Pro"
+            data-price="7999">
 
             <div class="card h-100">
 
@@ -316,10 +324,11 @@
         </div>
 
 
-        <!-- Товар -->
+        <!-- Xiaomi -->
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-card"
-             data-name="Xiaomi Robot Vacuum"
-             data-price="11999">
+            data-id="6"
+            data-name="Xiaomi Robot Vacuum"
+            data-price="11999">
 
             <div class="card h-100">
 
