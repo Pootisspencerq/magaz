@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Оформлення замовлення | Мій магазин</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
+</head>
+
+<body>
+
+<header class="bg-white border-bottom">
+
+    <div class="container py-3">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-12 col-lg-3">
+
+                <a href="index.html" class="logo">
+                    МІЙ МАГАЗИН
+                </a>
+
+            </div>
+
+            <div class="col-12 col-lg-6">
+
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Пошук товарів..."
+                    disabled
+                >
+
+            </div>
+
+            <div class="col-12 col-lg-3">
+
+                <button
+                    id="cartButton"
+                    class="btn btn-orange btn-lg w-100"
+                    type="button"
+                >
+                    🛒 Кошик
+
+                    <span
+                        id="cartCount"
+                        class="badge bg-dark"
+                    >
+                        0
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container py-5">
+
+    <div class="checkout-header">
+
+        <a
+            href="cart.html"
+            class="btn btn-outline-light mb-3"
+        >
+            ← Повернутися до кошика
+        </a>
+
+        <h1>
+            Оформлення замовлення
+        </h1>
+
+        <p>
+            Заповніть дані для оформлення покупки
+        </p>
+
+    </div>
+
+
+    <div
+        id="emptyCheckout"
+        class="checkout-empty"
+        style="display: none;"
+    >
+
+        <div class="empty-checkout-icon">
+            🛒
+        </div>
+
+        <h2>
+            Кошик порожній
+        </h2>
+
+        <p>
+            Додайте товари до кошика перед оформленням замовлення.
+        </p>
+
+        <a
+            href="index.html"
+            class="btn btn-orange btn-lg"
+        >
+            Перейти до каталогу
+        </a>
+
+    </div>
+
+
+    <div
+        id="checkoutContent"
+        class="row g-4"
+    >
+
+        <!-- ЛІВА ЧАСТИНА -->
+
+        <div class="col-12 col-lg-7">
+
+            <form id="checkoutForm">
+
+                <!-- Контактні дані -->
+
+                <section class="checkout-card">
+
+                    <h2>
+                        👤 Контактні дані
+                    </h2>
+
+                    <div class="row g-3">
+
+                        <div class="col-12 col-md-6">
+
+                            <label
+                                for="firstName"
+                                class="form-label"
+                            >
+                                Ім'я *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="firstName"
+                                class="form-control"
+                                placeholder="Ваше ім'я"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-12 col-md-6">
+
+                            <label
+                                for="lastName"
+                                class="form-label"
+                            >
+                                Прізвище *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="lastName"
+                                class="form-control"
+                                placeholder="Ваше прізвище"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-12 col-md-6">
+
+                            <label
+                                for="phone"
+                                class="form-label"
+                            >
+                                Телефон *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                class="form-control"
+                                placeholder="+380 XX XXX XX XX"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-12 col-md-6">
+
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                class="form-control"
+                                placeholder="example@gmail.com"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- Доставка -->
+
+                <section class="checkout-card">
+
+                    <h2>
+                        🚚 Доставка
+                    </h2>
+
+
+                    <div class="mb-3">
+
+                        <label
+                            for="city"
+                            class="form-label"
+                        >
+                            Місто *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            class="form-control"
+                            placeholder="Наприклад: Київ"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label
+                            for="delivery"
+                            class="form-label"
+                        >
+                            Спосіб доставки *
+                        </label>
+
+                        <select
+                            id="delivery"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Оберіть спосіб доставки
+                            </option>
+
+                            <option value="nova_poshta">
+                                Нова пошта
+                            </option>
+
+                            <option value="ukrposhta">
+                                Укрпошта
+                            </option>
+
+                            <option value="courier">
+                                Кур'єрська доставка
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        id="branchBlock"
+                        class="mb-3"
+                        style="display: none;"
+                    >
+
+                        <label
+                            for="branch"
+                            class="form-label"
+                        >
+                            Відділення / поштомат
+                        </label>
+
+                        <input
+                            type="text"
+                            id="branch"
+                            class="form-control"
+                            placeholder="Номер або адреса відділення"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="addressBlock"
+                        style="display: none;"
+                    >
+
+                        <label
+                            for="address"
+                            class="form-label"
+                        >
+                            Адреса доставки
+                        </label>
+
+                        <input
+                            type="text"
+                            id="address"
+                            class="form-control"
+                            placeholder="Вулиця, будинок, квартира"
+                        >
+
+                    </div>
+
+                </section>
+
+
+                <!-- Оплата -->
+
+                <section class="checkout-card">
+
+                    <h2>
+                        💳 Оплата
+                    </h2>
+
+
+                    <div class="payment-options">
+
+                        <label class="payment-option">
+
+                            <input
+                                type="radio"
+                                name="payment"
+                                value="cash"
+                                required
+                            >
+
+                            <span>
+                                💵
+                            </span>
+
+                            <div>
+                                <strong>
+                                    Оплата при отриманні
+                                </strong>
+
+                                <small>
+                                    Готівкою або карткою у відділенні
+                                </small>
+                            </div>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input
+                                type="radio"
+                                name="payment"
+                                value="card"
+                            >
+
+                            <span>
+                                💳
+                            </span>
+
+                            <div>
+                                <strong>
+                                    Оплата карткою
+                                </strong>
+
+                                <small>
+                                    Онлайн-оплата карткою
+                                </small>
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </section>
+
+
+                <!-- Коментар -->
+
+                <section class="checkout-card">
+
+                    <h2>
+                        📝 Коментар
+                    </h2>
+
+                    <textarea
+                        id="comment"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Додатковий коментар до замовлення..."
+                    ></textarea>
+
+                </section>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-orange btn-lg w-100 checkout-submit"
+                >
+                    ✅ Підтвердити замовлення
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ПРАВА ЧАСТИНА -->
+
+        <div class="col-12 col-lg-5">
+
+            <section class="checkout-summary">
+
+                <h2>
+                    🛒 Ваше замовлення
+                </h2>
+
+
+                <div id="checkoutItems">
+                    <!-- Товари завантажуються через JS -->
+                </div>
+
+
+                <hr>
+
+
+                <div class="summary-line">
+
+                    <span>
+                        Товарів:
+                    </span>
+
+                    <strong id="checkoutTotalItems">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-line">
+
+                    <span>
+                        Вартість товарів:
+                    </span>
+
+                    <strong id="checkoutProductsTotal">
+                        0 грн
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-line">
+
+                    <span>
+                        Доставка:
+                    </span>
+
+                    <strong id="deliveryPrice">
+                        0 грн
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-grand">
+
+                    <span>
+                        Разом:
+                    </span>
+
+                    <strong id="checkoutGrandTotal">
+                        0 грн
+                    </strong>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+
+    <!-- УСПІШНЕ ЗАМОВЛЕННЯ -->
+
+    <div
+        id="successOrder"
+        class="success-order"
+        style="display: none;"
+    >
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>
+            Замовлення прийнято!
+        </h1>
+
+        <p>
+            Дякуємо за покупку ❤️
+        </p>
+
+        <div class="order-number-box">
+
+            Номер замовлення:
+
+            <strong id="orderNumber">
+                -
+            </strong>
+
+        </div>
+
+        <p class="success-text">
+            Наш менеджер зв'яжеться з вами найближчим часом
+            для підтвердження замовлення.
+        </p>
+
+        <a
+            href="index.html"
+            class="btn btn-orange btn-lg"
+        >
+            🏠 Повернутися до магазину
+        </a>
+
+    </div>
+
+</main>
+
+
+<footer class="border-top mt-5">
+
+    <div class="container py-4 text-center">
+
+        <p class="mb-0">
+            © 2026 МІЙ МАГАЗИН
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="js/checkout.js"></script>
+
+</body>
+</html>

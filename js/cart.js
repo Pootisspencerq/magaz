@@ -371,9 +371,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelector("#checkoutButton")
         .addEventListener("click", () => {
 
-            alert(
-                "Замовлення оформлено! Дякуємо за покупку ❤️"
-            );
+            if (Object.keys(cart).length === 0) {
+                alert("Ваш кошик порожній.");
+                return;
+            }
+
+            window.location.href = "checkout.html";
 
         });
 
