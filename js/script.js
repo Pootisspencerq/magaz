@@ -2,293 +2,462 @@ console.log("script.js підключено!");
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // =========================
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+    const productsContainer = document.querySelector("#products");
+    const cartCount = document.querySelector("#cartCount");
+    const search = document.querySelector("#search");
+    const sort = document.querySelector("#sort");
+    const cartButton = document.querySelector("#cartButton");
+
+    let products = [];
+
+
+    // ========================================
     // КОШИК
-    // =========================
+    // ========================================
 
-    let cart = JSON.parse(
-        localStorage.getItem("cart")
-    ) || {};
-
-    const cartCount =
-        document.querySelector("#cartCount");
-
-
-    // Порахувати загальну кількість товарів
     function getCartCount() {
-
         return Object.values(cart).reduce(
             (sum, quantity) => sum + quantity,
             0
         );
-
     }
 
 
-    // Оновити цифру біля кошика
     function updateCartCount() {
-
         const count = getCartCount();
 
         if (cartCount) {
             cartCount.textContent = count;
         }
+    }
 
+
+    function saveCart() {
         localStorage.setItem(
-            "cartCount",
-            count
+            "cart",
+            JSON.stringify(cart)
+        );
+
+        updateCartCount();
+    }
+
+
+    // ========================================
+    // ФОРМАТУВАННЯ ЦІНИ
+    // ========================================
+
+    function formatPrice(price) {
+        return Number(price).toLocaleString("uk-UA");
+    }
+
+
+    // ========================================
+    // СТВОРЕННЯ КАРТКИ
+    // ========================================
+
+    function createProductCard(product) {
+
+        const card = document.createElement("div");
+
+        // Bootstrap сітка
+        card.className =
+            "col-12 col-sm-6 col-lg-4 col-xl-3 product-card";
+
+        card.dataset.id = product.id;
+        card.dataset.name = product.name;
+        card.dataset.price = product.price;
+
+
+        const image =
+            product.image ||
+            "https://picsum.photos/500/400?random=" +
+            product.id;
+
+
+        card.innerHTML = `
+
+            <div class="product-image">
+
+                <img
+                    src="${image}"
+                    alt="${product.name}"
+                >
+
+            </div>
+
+
+            <div class="product-card-body">
+
+                <h3>
+                    ${product.name}
+                </h3>
+
+
+                <div class="product-rating">
+                    ⭐ ${product.rating}
+                </div>
+
+
+                <p class="product-description">
+                    ${product.description || ""}
+                </p>
+
+
+                <div class="product-card-bottom">
+
+                    <strong class="product-price">
+                        ${formatPrice(product.price)} грн
+                    </strong>
+
+
+                    <button
+                        class="btn btn-orange buy-button"
+                        type="button"
+                    >
+                        Купити
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        return card;
+    }
+
+
+    // ========================================
+    // ВІДОБРАЖЕННЯ ТОВАРІВ
+    // ========================================
+
+    function renderProducts(list) {
+
+        if (!productsContainer) {
+            return;
+        }
+
+
+        productsContainer.innerHTML = "";
+
+
+        if (list.length === 0) {
+
+            productsContainer.innerHTML = `
+
+                <div class="no-products">
+
+                    <h3>
+                        Товарів не знайдено
+                    </h3>
+
+                    <p>
+                        Спробуйте змінити пошуковий запит.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        list.forEach(product => {
+
+            const card = createProductCard(product);
+
+            productsContainer.appendChild(card);
+
+        });
+
+    }
+
+
+    // ========================================
+    // ЗАВАНТАЖЕННЯ ТОВАРІВ З DJANGO
+    // ========================================
+
+    async function loadProducts() {
+
+        if (!productsContainer) {
+            console.error("Не знайдено #products");
+            return;
+        }
+
+
+        try {
+
+            productsContainer.innerHTML = `
+
+                <div class="loading-products">
+
+                    Завантаження товарів...
+
+                </div>
+
+            `;
+
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/products/"
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Помилка API: " + response.status
+                );
+
+            }
+
+
+            products = await response.json();
+
+
+            console.log(
+                "Товари отримано з Django:",
+                products
+            );
+
+
+            renderProducts(products);
+
+
+        } catch (error) {
+
+            console.error(
+                "Не вдалося завантажити товари:",
+                error
+            );
+
+
+            productsContainer.innerHTML = `
+
+                <div class="no-products">
+
+                    <h3>
+                        Не вдалося завантажити товари
+                    </h3>
+
+                    <p>
+                        Перевірте, чи запущений Django сервер.
+                    </p>
+
+                    <button
+                        class="btn btn-orange"
+                        id="reloadProducts"
+                    >
+                        🔄 Спробувати ще раз
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const reloadButton =
+                document.querySelector("#reloadProducts");
+
+
+            if (reloadButton) {
+
+                reloadButton.addEventListener(
+                    "click",
+                    loadProducts
+                );
+
+            }
+
+        }
+
+    }
+
+
+    // ========================================
+    // ПОШУК
+    // ========================================
+
+    if (search) {
+
+        search.addEventListener(
+            "input",
+            () => {
+
+                const text =
+                    search.value
+                        .toLowerCase()
+                        .trim();
+
+
+                const filtered =
+                    products.filter(product => {
+
+                        return product.name
+                            .toLowerCase()
+                            .includes(text);
+
+                    });
+
+
+                renderProducts(filtered);
+
+            }
         );
 
     }
 
 
-    updateCartCount();
+    // ========================================
+    // СОРТУВАННЯ
+    // ========================================
 
+    if (sort) {
 
-    // =========================
-    // КНОПКИ "КУПИТИ"
-    // =========================
+        sort.addEventListener(
+            "change",
+            () => {
 
-    const buyButtons =
-        document.querySelectorAll(".buy-button");
+                let sorted = [...products];
 
 
-    buyButtons.forEach(button => {
+                if (sort.value === "cheap") {
 
-        button.addEventListener("click", (event) => {
-
-            // Не відкривати сторінку товару
-            event.stopPropagation();
-
-
-            // Знаходимо картку товару
-            const card =
-                button.closest(".product-card");
-
-
-            if (!card) {
-                return;
-            }
-
-
-            // ID товару
-            const id =
-                card.dataset.id;
-
-
-            if (!id) {
-
-                console.error(
-                    "У товару немає data-id!"
-                );
-
-                return;
-
-            }
-
-
-            // Якщо товару ще немає
-            if (!cart[id]) {
-                cart[id] = 0;
-            }
-
-
-            // Додаємо одну одиницю
-            cart[id]++;
-
-
-            // Зберігаємо кошик
-            localStorage.setItem(
-                "cart",
-                JSON.stringify(cart)
-            );
-
-
-            // Оновлюємо кількість
-            updateCartCount();
-
-
-            // Анімація кнопки
-            button.textContent =
-                "✓ Додано";
-
-            button.disabled = true;
-
-
-            setTimeout(() => {
-
-                button.textContent =
-                    "Купити";
-
-                button.disabled = false;
-
-            }, 1000);
-
-        });
-
-    });
-
-
-    // =========================
-    // ВІДКРИТТЯ СТОРІНКИ ТОВАРУ
-    // =========================
-
-    const productCards =
-        document.querySelectorAll(".product-card");
-
-
-    productCards.forEach(card => {
-
-        card.style.cursor = "pointer";
-
-
-        card.addEventListener("click", (event) => {
-
-            // Якщо натиснули кнопку "Купити",
-            // нічого більше не робимо
-            if (
-                event.target.closest(".buy-button")
-            ) {
-                return;
-            }
-
-
-            const id =
-                card.dataset.id;
-
-
-            if (!id) {
-
-                console.error(
-                    "У картки немає data-id!"
-                );
-
-                return;
-
-            }
-
-
-            console.log(
-                "Відкриваємо товар:",
-                id
-            );
-
-
-            window.location.href =
-                "product.html?id=" + id;
-
-        });
-
-    });
-
-
-    // =========================
-    // ПОШУК
-    // =========================
-
-    const search =
-        document.querySelector("#search");
-
-
-    if (search) {
-
-        search.addEventListener("input", () => {
-
-            const text =
-                search.value
-                    .toLowerCase()
-                    .trim();
-
-
-            productCards.forEach(card => {
-
-                const name =
-                    card.dataset.name
-                        .toLowerCase();
-
-
-                if (name.includes(text)) {
-
-                    card.style.display = "";
-
-                } else {
-
-                    card.style.display = "none";
+                    sorted.sort(
+                        (a, b) =>
+                            Number(a.price) -
+                            Number(b.price)
+                    );
 
                 }
 
-            });
 
-        });
+                if (sort.value === "expensive") {
+
+                    sorted.sort(
+                        (a, b) =>
+                            Number(b.price) -
+                            Number(a.price)
+                    );
+
+                }
+
+
+                // Якщо вибрано "Сортування"
+                if (sort.value === "default") {
+                    sorted = [...products];
+                }
+
+
+                renderProducts(sorted);
+
+            }
+        );
 
     }
 
 
-    // =========================
-    // СОРТУВАННЯ
-    // =========================
+    // ========================================
+    // КЛІКИ ПО КАРТКАХ
+    // ========================================
 
-    const sort =
-        document.querySelector("#sort");
+    if (productsContainer) {
 
+        productsContainer.addEventListener(
+            "click",
+            (event) => {
 
-    const productsContainer =
-        document.querySelector("#products");
+                // --------------------------------
+                // КНОПКА "КУПИТИ"
+                // --------------------------------
 
-
-    if (sort && productsContainer) {
-
-        sort.addEventListener("change", () => {
-
-            const cards = [
-                ...document.querySelectorAll(
-                    ".product-card"
-                )
-            ];
+                const buyButton =
+                    event.target.closest(".buy-button");
 
 
-            if (sort.value === "cheap") {
+                if (buyButton) {
 
-                cards.sort((a, b) => {
+                    event.stopPropagation();
 
-                    return Number(a.dataset.price)
-                        - Number(b.dataset.price);
 
-                });
+                    const card =
+                        buyButton.closest(".product-card");
+
+
+                    if (!card) {
+                        return;
+                    }
+
+
+                    const id =
+                        card.dataset.id;
+
+
+                    if (!cart[id]) {
+                        cart[id] = 0;
+                    }
+
+
+                    cart[id]++;
+
+
+                    saveCart();
+
+
+                    buyButton.textContent =
+                        "✓ Додано";
+
+
+                    buyButton.disabled = true;
+
+
+                    setTimeout(() => {
+
+                        buyButton.textContent =
+                            "Купити";
+
+                        buyButton.disabled = false;
+
+                    }, 1000);
+
+
+                    return;
+                }
+
+
+                // --------------------------------
+                // КЛІК ПО КАРТЦІ
+                // --------------------------------
+
+                const card =
+                    event.target.closest(".product-card");
+
+
+                if (!card) {
+                    return;
+                }
+
+
+                const id =
+                    card.dataset.id;
+
+
+                window.location.href =
+                    "product.html?id=" + id;
 
             }
-
-
-            if (sort.value === "expensive") {
-
-                cards.sort((a, b) => {
-
-                    return Number(b.dataset.price)
-                        - Number(a.dataset.price);
-
-                });
-
-            }
-
-
-            cards.forEach(card => {
-
-                productsContainer.appendChild(card);
-
-            });
-
-        });
+        );
 
     }
 
 
-    // =========================
+    // ========================================
     // КНОПКА КОШИКА
-    // =========================
-
-    const cartButton =
-        document.querySelector("#cartButton");
-
+    // ========================================
 
     if (cartButton) {
 
@@ -303,5 +472,14 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
     }
+
+
+    // ========================================
+    // ПОЧАТКОВИЙ ЗАПУСК
+    // ========================================
+
+    updateCartCount();
+
+    loadProducts();
 
 });

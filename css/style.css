@@ -6,6 +6,7 @@
     --dark: #37353E;
     --dark-light: #44444E;
     --accent: #715A5A;
+    --accent-hover: #806868;
     --light: #D3DAD9;
     --white: #ffffff;
     --background: #37353E;
@@ -13,65 +14,67 @@
 
 
 /* =========================================================
-   ЗАГАЛЬНІ НАЛАШТУВАННЯ
+   RESET
 ========================================================= */
 
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html {
     margin: 0;
     padding: 0;
     min-height: 100%;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
     background: var(--background) !important;
     color: var(--light) !important;
 }
 
 
 /* =========================================================
-   ШАПКА
+   HEADER
 ========================================================= */
 
 header {
     width: 100%;
+
     background: var(--dark) !important;
     color: var(--light) !important;
-    border-bottom: 1px solid var(--dark-light) !important;
+
+    border-bottom: 1px solid rgba(211, 218, 217, 0.18) !important;
 }
 
-/* Bootstrap не повинен робити контейнер білим */
 header .container,
 header .container-fluid {
     background: transparent !important;
 }
 
-/* Верхня частина header */
-header a {
-    color: var(--light) !important;
-}
-
-header a:hover {
-    color: var(--white) !important;
-}
-
 
 /* =========================================================
-   ЛОГОТИП
+   LOGO
 ========================================================= */
 
 .logo {
     display: inline-block;
+
     color: var(--light) !important;
-    font-size: 24px;
+
+    font-size: 25px;
     font-weight: 800;
+    letter-spacing: 0.3px;
+
     text-decoration: none;
-    transition: color 0.2s ease;
+
+    transition: 0.2s ease;
 }
 
 .logo:hover {
@@ -80,67 +83,71 @@ header a:hover {
 
 
 /* =========================================================
-   ПОШУК
+   SEARCH
 ========================================================= */
 
 #search {
     width: 100%;
-    min-height: 52px;
 
-    background-color: var(--dark-light) !important;
-    border: 2px solid var(--dark-light) !important;
+    min-height: 48px;
+
+    padding: 10px 16px;
+
+    background: var(--dark-light) !important;
+
+    border: 1px solid rgba(211, 218, 217, 0.08) !important;
+    border-radius: 8px !important;
 
     color: var(--white) !important;
 
-    border-radius: 8px;
-
-    font-size: 18px;
-    padding: 10px 16px;
+    font-size: 16px;
 
     outline: none;
 }
 
 #search::placeholder {
     color: var(--light) !important;
-    opacity: 0.7;
+    opacity: 0.65;
 }
 
 #search:focus {
-    background-color: var(--dark-light) !important;
-    color: var(--white) !important;
+    background: var(--dark-light) !important;
 
     border-color: var(--accent) !important;
 
-    box-shadow: 0 0 0 0.2rem rgba(113, 90, 90, 0.35) !important;
+    color: var(--white) !important;
+
+    box-shadow:
+        0 0 0 3px rgba(113, 90, 90, 0.25) !important;
 }
 
 
 /* =========================================================
-   НАВІГАЦІЯ
+   NAVIGATION
 ========================================================= */
 
 nav {
     display: flex;
     align-items: center;
-    gap: 28px;
+
+    gap: 30px;
 
     overflow-x: auto;
 
-    padding: 0;
+    padding: 2px 0 0;
 }
 
 nav a {
     color: var(--light) !important;
-    background: transparent !important;
+
+    font-size: 15px;
+    font-weight: 500;
 
     text-decoration: none;
+
     white-space: nowrap;
 
-    font-size: 16px;
-
-    transition:
-        color 0.2s ease,
-        opacity 0.2s ease;
+    transition: 0.2s ease;
 }
 
 nav a:hover {
@@ -149,18 +156,20 @@ nav a:hover {
 
 
 /* =========================================================
-   КНОПКИ
+   BUTTONS
 ========================================================= */
 
 .btn-orange,
 .buy-button,
 .cart {
-    background-color: var(--accent) !important;
+    background: var(--accent) !important;
+
     border: 1px solid var(--accent) !important;
+
     color: var(--white) !important;
 
     transition:
-        background-color 0.2s ease,
+        background 0.2s ease,
         border-color 0.2s ease,
         transform 0.2s ease;
 }
@@ -168,225 +177,370 @@ nav a:hover {
 .btn-orange:hover,
 .buy-button:hover,
 .cart:hover {
-    background-color: var(--dark-light) !important;
-    border-color: var(--dark-light) !important;
+    background: var(--accent-hover) !important;
+
+    border-color: var(--accent-hover) !important;
+
     color: var(--white) !important;
 }
 
 
 /* =========================================================
-   КОШИК
+   CART BUTTON
 ========================================================= */
 
-.cart {
-    min-height: 52px;
+#cartButton {
+    min-height: 48px;
 
     border-radius: 8px !important;
 
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
 }
 
-.cart i,
-.cart svg {
-    color: var(--white) !important;
-}
+#cartCount {
+    margin-left: 5px;
 
-.cart .badge {
-    background-color: #222 !important;
+    background: #29282e !important;
+
     color: var(--white) !important;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
 /* =========================================================
-   ОСНОВНА ЧАСТИНА
+   MAIN
 ========================================================= */
 
 main {
-    min-height: calc(100vh - 130px);
+    min-height: calc(100vh - 170px);
 
-    background-color: var(--dark) !important;
+    background: var(--dark) !important;
     color: var(--light) !important;
 }
 
 
 /* =========================================================
-   ЗАГОЛОВКИ
+   CATALOG HEADER
 ========================================================= */
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: var(--light) !important;
+main > .container {
+    max-width: 1320px;
 }
 
-h2 {
-    font-size: 34px;
+main h2 {
+    margin: 0;
+
+    color: var(--light) !important;
+
+    font-size: 32px;
     font-weight: 700;
+
+    letter-spacing: -0.3px;
 }
 
 
 /* =========================================================
-   СОРТУВАННЯ
+   SORT
 ========================================================= */
 
 #sort {
-    min-height: 42px;
+    min-width: 155px;
+    min-height: 44px;
 
-    background-color: var(--dark-light) !important;
-    border: 1px solid var(--accent) !important;
+    padding-left: 14px;
+    padding-right: 35px;
+
+    background: var(--dark-light) !important;
+
+    border: 1px solid rgba(113, 90, 90, 0.8) !important;
+    border-radius: 8px !important;
 
     color: var(--light) !important;
 
-    border-radius: 6px;
-}
-
-#sort option {
-    background-color: var(--dark-light);
-    color: var(--light);
+    cursor: pointer;
 }
 
 #sort:focus {
-    background-color: var(--dark-light) !important;
+    background: var(--dark-light) !important;
+
+    border-color: var(--accent) !important;
+
     color: var(--white) !important;
 
-    border-color: var(--light) !important;
-
     box-shadow:
-        0 0 0 0.2rem rgba(211, 218, 217, 0.15) !important;
+        0 0 0 3px rgba(113, 90, 90, 0.2) !important;
+}
+
+#sort option {
+    background: var(--dark-light);
+    color: var(--light);
 }
 
 
 /* =========================================================
-   КАРТКИ ТОВАРІВ
+   PRODUCTS GRID
 ========================================================= */
 
-.card {
+#products {
+    width: 100%;
+
+    margin-top: 5px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+
     height: 100%;
 
-    background-color: var(--dark-light) !important;
-    color: var(--light) !important;
+    min-width: 0;
 
-    border: 1px solid var(--accent) !important;
-    border-radius: 8px !important;
+    background: var(--dark-light);
+
+    border: 1px solid rgba(113, 90, 90, 0.7);
+
+    border-radius: 10px;
 
     overflow: hidden;
 
+    cursor: pointer;
+
     transition:
         transform 0.2s ease,
+        border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
-.card:hover {
+.product-card:hover {
     transform: translateY(-4px);
 
+    border-color: rgba(211, 218, 217, 0.35);
+
     box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.35);
+        0 10px 25px rgba(0, 0, 0, 0.28);
 }
 
 
 /* =========================================================
-   ВМІСТ КАРТКИ
+   PRODUCT IMAGE
 ========================================================= */
 
-.card-body {
-    background-color: var(--dark-light) !important;
-    color: var(--light) !important;
+.product-image {
+    width: 100%;
+    height: 200px;
 
-    padding: 18px !important;
+    background: #302f35;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
 }
 
-.card-title {
+.product-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.025);
+}
+
+
+/* =========================================================
+   PRODUCT BODY
+========================================================= */
+
+.product-card-body {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    padding: 16px;
+}
+
+
+/* =========================================================
+   PRODUCT NAME
+========================================================= */
+
+.product-card-body h3 {
+    min-height: 25px;
+
+    margin: 0 0 8px;
+
     color: var(--light) !important;
 
     font-size: 18px;
     font-weight: 600;
-}
 
-.card-text {
-    color: var(--light) !important;
-    opacity: 0.85;
-
-    line-height: 1.5;
+    line-height: 1.35;
 }
 
 
 /* =========================================================
-   ФОТО ТОВАРУ
+   RATING
 ========================================================= */
 
-.product-image {
-    display: block;
+.product-rating {
+    margin-bottom: 8px;
 
-    width: 100%;
-    height: 220px;
-
-    object-fit: cover;
-
-    background-color: var(--dark-light);
-
-    border: 0;
-}
-
-
-/* =========================================================
-   РЕЙТИНГ
-========================================================= */
-
-.rating {
     color: var(--light) !important;
 
     font-size: 14px;
 }
 
-.rating .stars,
-.rating i {
-    color: #ffd43b !important;
-}
-
-.rating span {
-    color: var(--light) !important;
-    opacity: 0.7;
+.product-rating::first-letter {
+    color: #ffd43b;
 }
 
 
 /* =========================================================
-   ЦІНА
+   DESCRIPTION
 ========================================================= */
 
-.price {
+.product-description {
+    min-height: 42px;
+    max-height: 42px;
+
+    margin: 0 0 14px;
+
+    color: var(--light) !important;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    opacity: 0.72;
+
+    overflow: hidden;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+
+/* =========================================================
+   BOTTOM
+========================================================= */
+
+.product-card-bottom {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-top: auto;
+}
+
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+.product-price {
+    display: block;
+
     color: var(--white) !important;
 
-    font-size: 23px;
+    font-size: 21px;
     font-weight: 700;
 
-    margin-top: 12px;
+    line-height: 1.2;
 }
 
 
 /* =========================================================
-   КНОПКА "КУПИТИ"
+   BUY BUTTON
 ========================================================= */
 
-.buy-button {
+.product-card .buy-button {
     width: 100%;
 
-    min-height: 44px;
+    min-height: 42px;
 
-    border-radius: 6px !important;
+    border-radius: 7px !important;
 
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
 }
 
-.buy-button:hover {
-    background-color: var(--dark) !important;
-    border-color: var(--light) !important;
+.product-card .buy-button:hover {
+    background: var(--accent-hover) !important;
+
+    border-color: var(--accent-hover) !important;
+}
+
+.product-card .buy-button:disabled {
+    opacity: 0.75;
+
+    cursor: default;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading-products {
+    width: 100%;
+
+    padding: 70px 20px;
+
+    text-align: center;
+
+    color: var(--light);
+
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   NO PRODUCTS / ERROR
+========================================================= */
+
+.no-products {
+    width: 100%;
+
+    padding: 55px 20px;
+
+    text-align: center;
+
+    background: var(--dark-light);
+
+    border: 1px solid rgba(113, 90, 90, 0.7);
+
+    border-radius: 10px;
+
+    color: var(--light);
+}
+
+.no-products h3 {
+    margin-bottom: 10px;
+
+    color: var(--light) !important;
+}
+
+.no-products p {
+    margin-bottom: 20px;
+
+    color: var(--light);
+
+    opacity: 0.7;
 }
 
 
@@ -397,18 +551,15 @@ h2 {
 footer {
     width: 100%;
 
-    background-color: var(--dark) !important;
-    color: var(--light) !important;
+    background: var(--dark) !important;
 
-    border-top: 1px solid var(--dark-light) !important;
-}
+    border-top: 1px solid rgba(211, 218, 217, 0.12) !important;
 
-footer a {
     color: var(--light) !important;
 }
 
-footer a:hover {
-    color: var(--white) !important;
+footer p {
+    color: var(--light) !important;
 }
 
 
@@ -416,7 +567,18 @@ footer a:hover {
    BOOTSTRAP OVERRIDES
 ========================================================= */
 
-/* Bootstrap text utilities */
+.bg-white {
+    background-color: var(--dark) !important;
+}
+
+.bg-dark {
+    background-color: var(--dark) !important;
+}
+
+.bg-light {
+    background-color: var(--dark-light) !important;
+}
+
 .text-dark {
     color: var(--light) !important;
 }
@@ -429,164 +591,99 @@ footer a:hover {
     color: var(--white) !important;
 }
 
-/* Bootstrap background utilities */
-.bg-white {
-    background-color: var(--dark) !important;
-}
-
-.bg-light {
-    background-color: var(--dark-light) !important;
-}
-
-.bg-dark {
-    background-color: var(--dark) !important;
-}
-
 
 /* =========================================================
-   АДАПТИВНІСТЬ
+   PRODUCT PAGE
 ========================================================= */
-
-@media (max-width: 992px) {
-
-    .logo {
-        font-size: 22px;
-    }
-
-    nav {
-        gap: 20px;
-    }
-
-    h2 {
-        font-size: 30px;
-    }
-}
-
-
-@media (max-width: 768px) {
-
-    header {
-        padding: 12px 0;
-    }
-
-    .logo {
-        font-size: 21px;
-    }
-
-    #search {
-        min-height: 48px;
-        font-size: 16px;
-    }
-
-    .cart {
-        min-height: 48px;
-        font-size: 16px;
-    }
-
-    h2 {
-        font-size: 27px;
-    }
-
-    .product-image {
-        height: 240px;
-    }
-}
-
-
-@media (max-width: 576px) {
-
-    main {
-        padding-top: 30px !important;
-    }
-
-    nav {
-        gap: 16px;
-        padding-bottom: 5px;
-    }
-
-    nav a {
-        font-size: 14px;
-    }
-
-    .product-image {
-        height: 250px;
-    }
-
-    .logo {
-        font-size: 21px;
-    }
-
-    .card-body {
-        padding: 15px !important;
-    }
-
-    .price {
-        font-size: 21px;
-    }
-}
-/* =========================
-   СТОРІНКА ТОВАРУ
-========================= */
 
 .product-page {
     display: grid;
+
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 40px;
+
+    gap: 35px;
+
     align-items: start;
 }
 
 .product-gallery {
-    background: var(--dark-light);
-    border-radius: 16px;
+    min-height: 480px;
+
     padding: 25px;
-    min-height: 500px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
+
+    background: var(--dark-light);
+
+    border: 1px solid rgba(113, 90, 90, 0.6);
+
+    border-radius: 14px;
 }
 
 .product-gallery img {
     width: 100%;
-    max-height: 520px;
+
+    max-height: 500px;
+
     object-fit: contain;
-    border-radius: 12px;
+
+    border-radius: 10px;
 }
 
 .product-info {
+    padding: 28px;
+
     background: var(--dark-light);
-    border-radius: 16px;
-    padding: 30px;
+
+    border: 1px solid rgba(113, 90, 90, 0.6);
+
+    border-radius: 14px;
 }
 
 .product-info h1 {
+    margin-bottom: 12px;
+
+    color: var(--light) !important;
+
     font-size: 32px;
-    margin-bottom: 15px;
 }
 
 .product-rating {
-    font-size: 18px;
-}
-
-.product-rating span:last-child {
-    margin-left: 8px;
-}
-
-.product-description {
     font-size: 17px;
+}
+
+.product-info .product-description {
+    max-height: none;
+
+    margin-top: 20px;
+
+    font-size: 16px;
+
     line-height: 1.7;
+
+    opacity: 0.85;
+
+    display: block;
 }
 
 .product-page-price {
-    font-size: 32px;
-    font-weight: 700;
     margin-top: 25px;
+
+    color: var(--white);
+
+    font-size: 31px;
+    font-weight: 700;
 }
 
 .availability {
-    color: #7ee787;
-    font-weight: 600;
     margin-top: 10px;
+
+    color: #7ee787;
+
+    font-weight: 600;
 }
 
 .product-features {
@@ -594,136 +691,118 @@ footer a:hover {
 }
 
 .product-features h4 {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+
+    color: var(--light);
 }
 
 .feature-row {
     display: flex;
+
     justify-content: space-between;
+
     gap: 20px;
 
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 11px 0;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .feature-row span {
-    opacity: 0.7;
+    opacity: 0.65;
 }
 
 .quantity-box {
     display: flex;
+
     align-items: center;
-    gap: 15px;
+
+    gap: 12px;
+
     margin-top: 25px;
-    font-size: 18px;
+
+    font-size: 17px;
 }
 
 .quantity-box button {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
 
     border: none;
-    border-radius: 8px;
+
+    border-radius: 7px;
 
     background: var(--accent);
-    color: white;
 
-    font-size: 24px;
+    color: var(--white);
+
+    font-size: 22px;
+
     cursor: pointer;
 }
 
 .quantity-box button:hover {
-    opacity: 0.85;
+    background: var(--accent-hover);
 }
 
 #quantity {
     min-width: 30px;
+
     text-align: center;
-    font-weight: bold;
+
+    font-weight: 700;
 }
 
 
-/* Планшет / телефон */
-
-@media (max-width: 900px) {
-
-    .product-page {
-        grid-template-columns: 1fr;
-    }
-
-    .product-gallery {
-        min-height: 350px;
-    }
-
-}
-
-
-/* Маленький телефон */
-
-@media (max-width: 576px) {
-
-    .product-info {
-        padding: 20px;
-    }
-
-    .product-info h1 {
-        font-size: 25px;
-    }
-
-    .product-page-price {
-        font-size: 27px;
-    }
-
-    .product-gallery {
-        padding: 15px;
-        min-height: 280px;
-    }
-
-}
-/* =========================
-   КОШИК
-========================= */
+/* =========================================================
+   CART
+========================================================= */
 
 .cart-empty {
+    padding: 55px 20px;
+
     background: var(--dark-light);
-    border-radius: 16px;
-    padding: 60px 20px;
+
+    border: 1px solid rgba(113, 90, 90, 0.6);
+
+    border-radius: 14px;
+
+    text-align: center;
 }
 
 .empty-cart-icon {
-    font-size: 70px;
-    margin-bottom: 20px;
-}
+    margin-bottom: 18px;
 
-.cart-empty h2 {
-    margin-bottom: 10px;
+    font-size: 65px;
 }
 
 .cart-empty p {
     opacity: 0.7;
-    margin-bottom: 25px;
 }
-
-
-/* Товар у кошику */
 
 .cart-item {
     display: grid;
-    grid-template-columns: 100px 1fr auto auto auto;
-    gap: 20px;
+
+    grid-template-columns: 90px 1fr auto auto auto;
+
+    gap: 18px;
+
     align-items: center;
 
-    background: var(--dark-light);
-    border-radius: 14px;
+    padding: 16px;
 
-    padding: 18px;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
+
+    background: var(--dark-light);
+
+    border: 1px solid rgba(113, 90, 90, 0.5);
+
+    border-radius: 12px;
 }
 
-
 .cart-item-image {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
 }
 
 .cart-item-image img {
@@ -731,102 +810,176 @@ footer a:hover {
     height: 100%;
 
     object-fit: cover;
-    border-radius: 10px;
+
+    border-radius: 8px;
 }
 
-
 .cart-item-info h4 {
-    font-size: 18px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+
+    color: var(--light);
+
+    font-size: 17px;
 }
 
 .cart-item-price {
     opacity: 0.7;
 }
 
-
 .cart-item-quantity {
     display: flex;
+
     align-items: center;
-    gap: 10px;
+
+    gap: 8px;
 }
 
 .cart-item-quantity button {
-    width: 35px;
-    height: 35px;
+    width: 34px;
+    height: 34px;
 
     border: none;
-    border-radius: 7px;
+
+    border-radius: 6px;
 
     background: var(--accent);
+
     color: white;
 
-    font-size: 20px;
     cursor: pointer;
 }
 
 .cart-item-quantity span {
     min-width: 25px;
+
     text-align: center;
 }
 
-
 .cart-item-total {
-    font-weight: 700;
-    min-width: 110px;
-    text-align: right;
-}
+    min-width: 100px;
 
+    text-align: right;
+
+    font-weight: 700;
+}
 
 .remove-item {
     border: none;
+
     background: transparent;
+
+    color: var(--light);
 
     font-size: 20px;
 
     cursor: pointer;
 }
 
-
-/* Підсумок */
-
 .cart-summary {
+    padding: 22px;
+
     background: var(--dark-light);
-    border-radius: 16px;
-    padding: 25px;
+
+    border: 1px solid rgba(113, 90, 90, 0.6);
+
+    border-radius: 14px;
 
     position: sticky;
+
     top: 20px;
 }
 
 .summary-row {
     display: flex;
+
     justify-content: space-between;
 
-    margin-bottom: 15px;
+    margin-bottom: 14px;
 }
 
 .summary-total {
     display: flex;
+
     justify-content: space-between;
 
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 700;
 }
 
 
-/* Телефон */
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .logo {
+        font-size: 23px;
+    }
+
+    main h2 {
+        font-size: 29px;
+    }
+
+    .product-image {
+        height: 210px;
+    }
+
+    .product-page {
+        grid-template-columns: 1fr;
+
+        gap: 25px;
+    }
+
+    .product-gallery {
+        min-height: 380px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 768px) {
 
+    header {
+        padding: 5px 0;
+    }
+
+    nav {
+        gap: 20px;
+    }
+
+    #cartButton {
+        min-height: 46px;
+    }
+
+    main h2 {
+        font-size: 26px;
+    }
+
+    .product-image {
+        height: 220px;
+    }
+
+    .product-info {
+        padding: 22px;
+    }
+
+    .product-info h1 {
+        font-size: 27px;
+    }
+
     .cart-item {
-        grid-template-columns: 80px 1fr auto;
+        grid-template-columns: 75px 1fr auto;
+
         gap: 12px;
     }
 
     .cart-item-image {
-        width: 80px;
-        height: 80px;
+        width: 75px;
+        height: 75px;
     }
 
     .cart-item-quantity {
@@ -836,6 +989,7 @@ footer a:hover {
     .cart-item-total {
         grid-column: 3;
         grid-row: 2;
+
         min-width: auto;
     }
 
@@ -843,5 +997,90 @@ footer a:hover {
         grid-column: 3;
         grid-row: 1;
     }
+}
 
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    main {
+        padding-top: 30px !important;
+    }
+
+    main h2 {
+        font-size: 23px;
+    }
+
+    nav {
+        gap: 16px;
+
+        padding-bottom: 5px;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+
+    .logo {
+        font-size: 21px;
+    }
+
+    .product-image {
+        height: 220px;
+    }
+
+    .product-card-body {
+        padding: 15px;
+    }
+
+    .product-price {
+        font-size: 20px;
+    }
+
+    #sort {
+        min-width: 135px;
+    }
+
+    .product-gallery {
+        min-height: 280px;
+
+        padding: 15px;
+    }
+
+    .product-info {
+        padding: 18px;
+    }
+
+    .product-page-price {
+        font-size: 27px;
+    }
+}
+/* ==========================================
+   ЛОГО VILKA
+========================================== */
+
+.logo.vilka-logo {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+}
+
+.logo.vilka-logo img {
+    display: block;
+    width: 150px;
+    height: 55px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+@media (max-width: 576px) {
+    .logo.vilka-logo img {
+        width: 125px;
+        height: 45px;
+    }
 }

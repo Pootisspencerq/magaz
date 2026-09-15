@@ -1,257 +1,741 @@
 console.log("product.js підключено!");
 
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    const products = {
 
-        1: {
-            name: "Lenovo IdeaPad 3",
-            price: 24999,
-            rating: "4.8",
-            brand: "Lenovo",
-            category: "Ноутбуки",
-            description:
-                "Потужний ноутбук для навчання, роботи та повсякденного використання.",
-            image: "https://picsum.photos/800/600?random=1"
-        },
+    // =====================================================
+    // API
+    // =====================================================
 
-        2: {
-            name: "Samsung Galaxy A55",
-            price: 18999,
-            rating: "4.9",
-            brand: "Samsung",
-            category: "Смартфони",
-            description:
-                "Сучасний смартфон з якісним дисплеєм та камерою.",
-            image: "https://picsum.photos/800/600?random=2"
-        },
-
-        3: {
-            name: "Sony WH-1000XM5",
-            price: 9499,
-            rating: "4.7",
-            brand: "Sony",
-            category: "Навушники",
-            description:
-                "Бездротові навушники з активним шумозаглушенням.",
-            image: "https://picsum.photos/800/600?random=3"
-        },
-
-        4: {
-            name: "Logitech G Pro Keyboard",
-            price: 3899,
-            rating: "4.6",
-            brand: "Logitech",
-            category: "Клавіатури",
-            description:
-                "Механічна клавіатура для роботи та ігор.",
-            image: "https://picsum.photos/800/600?random=4"
-        },
-
-        5: {
-            name: "Apple AirPods Pro",
-            price: 7999,
-            rating: "4.9",
-            brand: "Apple",
-            category: "Навушники",
-            description:
-                "Компактні бездротові навушники з шумозаглушенням.",
-            image: "https://picsum.photos/800/600?random=5"
-        },
-
-        6: {
-            name: "Xiaomi Robot Vacuum",
-            price: 11999,
-            rating: "4.5",
-            brand: "Xiaomi",
-            category: "Побутова техніка",
-            description:
-                "Робот-пилосос для автоматичного прибирання будинку.",
-            image: "https://picsum.photos/800/600?random=6"
-        }
-
-    };
+    const API_BASE =
+        "http://127.0.0.1:8000/api/products/";
 
 
-    // Отримуємо ID товару
-    const params = new URLSearchParams(
-        window.location.search
+    // =====================================================
+    // ID ТОВАРУ З URL
+    // =====================================================
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const productId =
+        params.get("id");
+
+
+    console.log(
+        "ID товару:",
+        productId
     );
 
-    const id = params.get("id");
+
+    // =====================================================
+    // ЕЛЕМЕНТИ
+    // =====================================================
+
+    const productPage =
+        document.querySelector("#productPage");
 
 
-    // Якщо товар не знайдений
-    if (!id || !products[id]) {
-
-        document.querySelector("main").innerHTML = `
-            <div class="text-center py-5">
-
-                <h2>Товар не знайдено</h2>
-
-                <p>
-                    Перевірте адресу сторінки.
-                </p>
-
-                <a
-                    href="index.html"
-                    class="btn btn-orange"
-                >
-                    Повернутися до каталогу
-                </a>
-
-            </div>
-        `;
-
-        return;
-    }
+    const productLoading =
+        document.querySelector("#productLoading");
 
 
-    const product = products[id];
+    const productError =
+        document.querySelector("#productError");
 
 
-    // Заповнюємо сторінку
-    document.querySelector("#productName").textContent =
-        product.name;
-
-    document.querySelector("#productPrice").textContent =
-        product.price.toLocaleString("uk-UA") + " грн";
-
-    document.querySelector("#productRating").textContent =
-        product.rating;
-
-    document.querySelector("#productDescription").textContent =
-        product.description;
-
-    document.querySelector("#productBrand").textContent =
-        product.brand;
-
-    document.querySelector("#productCategory").textContent =
-        product.category;
-
-    document.querySelector("#productImage").src =
-        product.image;
-
-    document.querySelector("#productImage").alt =
-        product.name;
-
-    document.title =
-        `${product.name} | Мій магазин`;
+    const productImage =
+        document.querySelector("#productImage");
 
 
-    // =========================
-    // КІЛЬКІСТЬ
-    // =========================
+    const productName =
+        document.querySelector("#productName");
 
-    let quantity = 1;
+
+    const productRating =
+        document.querySelector("#productRating");
+
+
+    const productDescription =
+        document.querySelector("#productDescription");
+
+
+    const productPrice =
+        document.querySelector("#productPrice");
+
+
+    const productAvailability =
+        document.querySelector("#productAvailability");
+
+
+    const productBrand =
+        document.querySelector("#productBrand");
+
+
+    const productCategory =
+        document.querySelector("#productCategory");
+
+
+    const productStock =
+        document.querySelector("#productStock");
+
 
     const quantityElement =
         document.querySelector("#quantity");
 
-    const minusButton =
-        document.querySelector("#minusButton");
 
-    const plusButton =
-        document.querySelector("#plusButton");
+    const quantityMinus =
+        document.querySelector("#quantityMinus");
 
 
-    plusButton.addEventListener("click", () => {
-
-        quantity++;
-
-        quantityElement.textContent =
-            quantity;
-
-    });
+    const quantityPlus =
+        document.querySelector("#quantityPlus");
 
 
-    minusButton.addEventListener("click", () => {
-
-        if (quantity > 1) {
-
-            quantity--;
-
-            quantityElement.textContent =
-                quantity;
-
-        }
-
-    });
+    const addToCartButton =
+        document.querySelector("#addToCartButton");
 
 
-    // =========================
-    // КОШИК
-    // =========================
+    const addToCartMessage =
+        document.querySelector("#addToCartMessage");
 
-    let cart = Number(
-        localStorage.getItem("cartCount")
-    ) || 0;
+
+    const cartButton =
+        document.querySelector("#cartButton");
 
 
     const cartCount =
         document.querySelector("#cartCount");
 
 
-    cartCount.textContent = cart;
+
+    // =====================================================
+    // ЗМІННІ
+    // =====================================================
+
+    let product = null;
+
+    let quantity = 1;
 
 
-    // =========================
-    // КУПИТИ
-    // =========================
 
-    const buyButton =
-        document.querySelector("#productBuyButton");
+    // =====================================================
+    // КОШИК
+    // =====================================================
+
+    let cart =
+        JSON.parse(
+            localStorage.getItem("cart")
+        ) || {};
 
 
-    buyButton.addEventListener("click", () => {
 
-        cart += quantity;
+    // =====================================================
+    // ФОРМАТ ЦІНИ
+    // =====================================================
+
+    function formatPrice(price) {
+
+        return Number(price)
+            .toLocaleString("uk-UA");
+
+    }
+
+
+
+    // =====================================================
+    // ЛІЧИЛЬНИК КОШИКА
+    // =====================================================
+
+    function updateCartCount() {
+
+        const count =
+            Object.values(cart).reduce(
+                (sum, value) => {
+
+                    return sum + Number(value);
+
+                },
+                0
+            );
+
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                count;
+
+        }
+
+    }
+
+
+
+    // =====================================================
+    // ЗБЕРЕГТИ КОШИК
+    // =====================================================
+
+    function saveCart() {
 
         localStorage.setItem(
-            "cartCount",
-            cart
+            "cart",
+            JSON.stringify(cart)
         );
 
-        cartCount.textContent =
-            cart;
+
+        updateCartCount();
+
+    }
 
 
-        const oldText =
-            buyButton.textContent;
+
+    // =====================================================
+    // ПОКАЗАТИ ПОМИЛКУ
+    // =====================================================
+
+    function showError() {
+
+        if (productLoading) {
+
+            productLoading.style.display =
+                "none";
+
+        }
 
 
-        buyButton.textContent =
-            "✓ Додано до кошика";
+        if (productPage) {
 
-        buyButton.disabled = true;
+            productPage.style.display =
+                "none";
 
-
-        setTimeout(() => {
-
-            buyButton.textContent =
-                oldText;
-
-            buyButton.disabled = false;
-
-        }, 1200);
-
-    });
+        }
 
 
-    // =========================
+        if (productError) {
+
+            productError.style.display =
+                "block";
+
+        }
+
+    }
+
+
+
+    // =====================================================
+    // ЗАВАНТАЖЕННЯ ТОВАРУ
+    // =====================================================
+
+    async function loadProduct() {
+
+        // Якщо ID немає
+
+        if (!productId) {
+
+            console.error(
+                "ID товару відсутній"
+            );
+
+            showError();
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE + productId + "/"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            product =
+                await response.json();
+
+
+            console.log(
+                "Товар отримано з Django:",
+                product
+            );
+
+
+            renderProduct();
+
+
+        } catch (error) {
+
+            console.error(
+                "Не вдалося завантажити товар:",
+                error
+            );
+
+
+            showError();
+
+        }
+
+    }
+
+
+
+    // =====================================================
+    // ВІДОБРАЖЕННЯ ТОВАРУ
+    // =====================================================
+
+    function renderProduct() {
+
+        if (!product) {
+
+            showError();
+
+            return;
+
+        }
+
+
+        // -----------------------------------------------
+        // НАЗВА ВКЛАДКИ
+        // -----------------------------------------------
+
+        document.title =
+            product.name +
+            " | VILKA";
+
+
+        // -----------------------------------------------
+        // НАЗВА
+        // -----------------------------------------------
+
+        productName.textContent =
+            product.name;
+
+
+        // -----------------------------------------------
+        // ФОТО
+        // -----------------------------------------------
+
+        const image =
+            product.image ||
+            "https://picsum.photos/800/600?random=" +
+            product.id;
+
+
+        productImage.src =
+            image;
+
+
+        productImage.alt =
+            product.name;
+
+
+        // -----------------------------------------------
+        // РЕЙТИНГ
+        // -----------------------------------------------
+
+        productRating.innerHTML =
+            "⭐ " +
+            product.rating;
+
+
+        // -----------------------------------------------
+        // ОПИС
+        // -----------------------------------------------
+
+        productDescription.textContent =
+            product.description ||
+            "Опис товару поки відсутній.";
+
+
+        // -----------------------------------------------
+        // ЦІНА
+        // -----------------------------------------------
+
+        productPrice.textContent =
+            formatPrice(product.price) +
+            " грн";
+
+
+        // -----------------------------------------------
+        // БРЕНД
+        // -----------------------------------------------
+
+        productBrand.textContent =
+            product.brand ||
+            "Не вказано";
+
+
+        // -----------------------------------------------
+        // КАТЕГОРІЯ
+        // -----------------------------------------------
+
+        productCategory.textContent =
+            product.category ||
+            "Не вказано";
+
+
+        // -----------------------------------------------
+        // СКЛАД
+        // -----------------------------------------------
+
+        const stock =
+            Number(product.stock);
+
+
+        productStock.textContent =
+            stock +
+            " шт.";
+
+
+        // -----------------------------------------------
+        // НАЯВНІСТЬ
+        // -----------------------------------------------
+
+        if (stock > 0) {
+
+            productAvailability.textContent =
+                "✓ В наявності";
+
+            productAvailability.style.color =
+                "#7ee787";
+
+
+            addToCartButton.disabled =
+                false;
+
+        } else {
+
+            productAvailability.textContent =
+                "✕ Немає в наявності";
+
+            productAvailability.style.color =
+                "#ff6b6b";
+
+
+            addToCartButton.disabled =
+                true;
+
+            addToCartButton.textContent =
+                "Немає в наявності";
+
+        }
+
+
+        // -----------------------------------------------
+        // ПОКАЗАТИ СТОРІНКУ
+        // -----------------------------------------------
+
+        productLoading.style.display =
+            "none";
+
+
+        productPage.style.display =
+            "grid";
+
+
+        updateQuantity();
+
+
+    }
+
+
+
+    // =====================================================
+    // КІЛЬКІСТЬ
+    // =====================================================
+
+    function updateQuantity() {
+
+        quantityElement.textContent =
+            quantity;
+
+    }
+
+
+
+    // =====================================================
+    // МІНУС
+    // =====================================================
+
+    if (quantityMinus) {
+
+        quantityMinus.addEventListener(
+            "click",
+            () => {
+
+                if (quantity > 1) {
+
+                    quantity--;
+
+                    updateQuantity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    // =====================================================
+    // ПЛЮС
+    // =====================================================
+
+    if (quantityPlus) {
+
+        quantityPlus.addEventListener(
+            "click",
+            () => {
+
+                if (!product) {
+
+                    return;
+
+                }
+
+
+                const stock =
+                    Number(product.stock);
+
+
+                if (
+                    stock > 0 &&
+                    quantity < stock
+                ) {
+
+                    quantity++;
+
+                    updateQuantity();
+
+                } else {
+
+                    alert(
+                        "На складі доступно лише " +
+                        stock +
+                        " шт."
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    // =====================================================
+    // ДОДАТИ В КОШИК
+    // =====================================================
+
+    if (addToCartButton) {
+
+        addToCartButton.addEventListener(
+            "click",
+            () => {
+
+                if (!product) {
+
+                    return;
+
+                }
+
+
+                const stock =
+                    Number(product.stock);
+
+
+                if (stock <= 0) {
+
+                    alert(
+                        "Цього товару немає в наявності."
+                    );
+
+                    return;
+
+                }
+
+
+                const id =
+                    String(product.id);
+
+
+                if (!cart[id]) {
+
+                    cart[id] =
+                        0;
+
+                }
+
+
+                const currentQuantity =
+                    Number(cart[id]);
+
+
+                // Перевірка складу
+
+                if (
+                    currentQuantity + quantity >
+                    stock
+                ) {
+
+                    alert(
+                        "На складі доступно лише " +
+                        stock +
+                        " шт."
+                    );
+
+                    return;
+
+                }
+
+
+                // Додаємо
+
+                cart[id] =
+                    currentQuantity +
+                    quantity;
+
+
+                saveCart();
+
+
+                // Повідомлення
+
+                if (addToCartMessage) {
+
+                    addToCartMessage.style.display =
+                        "block";
+
+
+                    setTimeout(() => {
+
+                        addToCartMessage.style.display =
+                            "none";
+
+                    }, 2000);
+
+                }
+
+
+                // Кнопка
+
+                const oldText =
+                    addToCartButton.textContent;
+
+
+                addToCartButton.textContent =
+                    "✓ Додано до кошика";
+
+
+                addToCartButton.disabled =
+                    true;
+
+
+                setTimeout(() => {
+
+                    addToCartButton.textContent =
+                        oldText;
+
+                    addToCartButton.disabled =
+                        false;
+
+                }, 1500);
+
+            }
+        );
+
+    }
+
+
+
+    // =====================================================
     // КНОПКА КОШИКА
-    // =========================
+    // =====================================================
 
-    const cartButton =
-        document.querySelector("#cartButton");
+    if (cartButton) {
 
+        cartButton.addEventListener(
+            "click",
+            () => {
 
-    cartButton.addEventListener("click", () => {
+                window.location.href =
+                    "cart.html";
 
-        alert(
-            `У кошику товарів: ${cart}`
+            }
         );
 
-    });
+    }
+
+
+
+    // =====================================================
+    // ПОШУК
+    // =====================================================
+
+    const search =
+        document.querySelector("#search");
+
+
+    if (search) {
+
+        search.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    const text =
+                        search.value.trim();
+
+
+                    if (!text) {
+
+                        window.location.href =
+                            "index.html";
+
+                        return;
+
+                    }
+
+
+                    window.location.href =
+                        "index.html?search=" +
+                        encodeURIComponent(text);
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    // =====================================================
+    // СТАРТ
+    // =====================================================
+
+    updateCartCount();
+
+    loadProduct();
 
 });

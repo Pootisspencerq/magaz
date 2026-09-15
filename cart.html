@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +12,16 @@
 
     <link rel="stylesheet" href="css/style.css">
 
-    <title>Кошик | Мій магазин</title>
+    <title>Кошик | VILKA</title>
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+     ШАПКА
+===================================================== -->
 
 <header class="bg-white border-bottom">
 
@@ -22,14 +29,21 @@
 
         <div class="row align-items-center g-3">
 
+            <!-- ЛОГОТИП -->
+
             <div class="col-12 col-lg-3">
 
-                <a href="index.html" class="logo">
-                    МІЙ МАГАЗИН
+                <a
+                    href="index.html"
+                    class="logo"
+                >
+                    VILKA
                 </a>
 
             </div>
 
+
+            <!-- ПОШУК -->
 
             <div class="col-12 col-lg-6">
 
@@ -43,17 +57,25 @@
             </div>
 
 
+            <!-- КОШИК -->
+
             <div class="col-12 col-lg-3">
 
                 <button
                     id="cartButton"
                     class="btn btn-orange btn-lg w-100"
+                    type="button"
                 >
+
                     🛒 Кошик
+
                     <span
                         id="cartCount"
                         class="badge bg-dark"
-                    >0</span>
+                    >
+                        0
+                    </span>
+
                 </button>
 
             </div>
@@ -61,13 +83,29 @@
         </div>
 
 
+        <!-- НАВІГАЦІЯ -->
+
         <nav class="mt-3">
 
-            <a href="index.html">Каталог</a>
-            <a href="#">Комп'ютери</a>
-            <a href="#">Телефони</a>
-            <a href="#">Ноутбуки</a>
-            <a href="#">Аксесуари</a>
+            <a href="index.html">
+                Каталог
+            </a>
+
+            <a href="#">
+                Комп'ютери
+            </a>
+
+            <a href="#">
+                Телефони
+            </a>
+
+            <a href="#">
+                Ноутбуки
+            </a>
+
+            <a href="#">
+                Аксесуари
+            </a>
 
         </nav>
 
@@ -76,13 +114,22 @@
 </header>
 
 
+
+<!-- =====================================================
+     ОСНОВНИЙ КОНТЕНТ
+===================================================== -->
+
 <main class="container py-5">
+
+
+    <!-- ЗАГОЛОВОК -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h1 class="fw-bold mb-0">
             🛒 Кошик
         </h1>
+
 
         <a
             href="index.html"
@@ -94,24 +141,31 @@
     </div>
 
 
-    <!-- Порожній кошик -->
+
+    <!-- =================================================
+         ПОРОЖНІЙ КОШИК
+    ================================================= -->
 
     <div
         id="emptyCart"
         class="cart-empty text-center"
+        style="display: none;"
     >
 
         <div class="empty-cart-icon">
             🛒
         </div>
 
+
         <h2>
             Ваш кошик порожній
         </h2>
 
+
         <p>
             Додайте товари, щоб вони з'явилися тут.
         </p>
+
 
         <a
             href="index.html"
@@ -123,7 +177,10 @@
     </div>
 
 
-    <!-- Кошик -->
+
+    <!-- =================================================
+         ВМІСТ КОШИКА
+    ================================================= -->
 
     <div
         id="cartContent"
@@ -133,7 +190,9 @@
         <div class="row g-4">
 
 
-            <!-- Товари -->
+            <!-- =========================================
+                 ТОВАРИ
+            ========================================= -->
 
             <div class="col-12 col-lg-8">
 
@@ -141,8 +200,9 @@
 
 
                 <button
-                    id="clearCart"
+                    id="clearCartButton"
                     class="btn btn-outline-danger mt-3"
+                    type="button"
                 >
                     🗑 Очистити кошик
                 </button>
@@ -150,18 +210,25 @@
             </div>
 
 
-            <!-- Підсумок -->
+
+            <!-- =========================================
+                 ПІДСУМОК
+            ========================================= -->
 
             <div class="col-12 col-lg-4">
 
                 <div class="cart-summary">
 
+
                     <h3>
                         Підсумок
                     </h3>
 
+
                     <hr>
 
+
+                    <!-- КІЛЬКІСТЬ -->
 
                     <div class="summary-row">
 
@@ -169,12 +236,16 @@
                             Товарів:
                         </span>
 
-                        <strong id="totalItems">
+
+                        <strong id="cartProductsCount">
                             0
                         </strong>
 
                     </div>
 
+
+
+                    <!-- ВАРТІСТЬ -->
 
                     <div class="summary-row">
 
@@ -182,7 +253,8 @@
                             Вартість:
                         </span>
 
-                        <strong id="totalPrice">
+
+                        <strong id="cartTotal">
                             0 грн
                         </strong>
 
@@ -192,22 +264,28 @@
                     <hr>
 
 
+                    <!-- РАЗОМ -->
+
                     <div class="summary-total">
 
                         <span>
                             Разом:
                         </span>
 
-                        <strong id="grandTotal">
+
+                        <strong id="cartGrandTotal">
                             0 грн
                         </strong>
 
                     </div>
 
 
+                    <!-- ОФОРМИТИ -->
+
                     <button
                         id="checkoutButton"
                         class="btn btn-orange btn-lg w-100 mt-4"
+                        type="button"
                     >
                         Оформити замовлення
                     </button>
@@ -223,16 +301,27 @@
 </main>
 
 
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
 <footer class="bg-dark text-white text-center py-4">
 
     <p class="mb-0">
-        © 2026 Мій магазин
+        © 2026 VILKA
     </p>
 
 </footer>
 
 
+
+<!-- =====================================================
+     JS
+===================================================== -->
+
 <script src="js/cart.js"></script>
 
 </body>
+
 </html>

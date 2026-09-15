@@ -1,262 +1,964 @@
-console.log("checkout.js підключено!");
-
 document.addEventListener("DOMContentLoaded", () => {
 
-    const products = {
+    const API_BASE = "http://127.0.0.1:8000/api";
 
-        1: {
-            name: "Lenovo IdeaPad 3",
-            price: 24999,
-            image: "https://picsum.photos/500/400?random=1"
-        },
+    const PRODUCTS_URL = `${API_BASE}/products/`;
+    const ORDERS_URL = `${API_BASE}/orders/create/`;
 
-        2: {
-            name: "Samsung Galaxy A55",
-            price: 18999,
-            image: "https://picsum.photos/500/400?random=2"
-        },
+    // ==============================
+    // ELEMENTS
+    // ==============================
 
-        3: {
-            name: "Sony WH-1000XM5",
-            price: 9499,
-            image: "https://picsum.photos/500/400?random=3"
-        },
-
-        4: {
-            name: "Logitech G Pro Keyboard",
-            price: 3899,
-            image: "https://picsum.photos/500/400?random=4"
-        },
-
-        5: {
-            name: "Apple AirPods Pro",
-            price: 7999,
-            image: "https://picsum.photos/500/400?random=5"
-        },
-
-        6: {
-            name: "Xiaomi Robot Vacuum",
-            price: 11999,
-            image: "https://picsum.photos/500/400?random=6"
-        }
-
-    };
-
-
-    let cart = JSON.parse(
-        localStorage.getItem("cart")
-    ) || {};
-
+    const checkoutForm = document.querySelector("#checkoutForm");
 
     const checkoutContent =
         document.querySelector("#checkoutContent");
 
-    const emptyCheckout =
+    const checkoutEmpty =
         document.querySelector("#emptyCheckout");
 
-    const checkoutItems =
-        document.querySelector("#checkoutItems");
+    const checkoutSummary =
+        document.querySelector("#checkoutSummary");
 
-    const checkoutTotalItems =
-        document.querySelector("#checkoutTotalItems");
+    const successBlock =
+        document.querySelector("#successBlock");
 
-    const checkoutProductsTotal =
-        document.querySelector("#checkoutProductsTotal");
+    const successOrderNumber =
+        document.querySelector("#successOrderNumber");
 
-    const checkoutGrandTotal =
-        document.querySelector("#checkoutGrandTotal");
-
-    const deliveryPrice =
-        document.querySelector("#deliveryPrice");
+    const cartButton =
+        document.querySelector("#cartButton");
 
     const cartCount =
         document.querySelector("#cartCount");
 
+    const search =
+        document.querySelector("#search");
+
+    const deliverySelect =
+        document.querySelector("#delivery");
+
+    const branchBlock =
+        document.querySelector("#branchBlock");
+
+    const addressBlock =
+        document.querySelector("#addressBlock");
+
+    const branchInput =
+        document.querySelector("#branch");
+
+    const addressInput =
+        document.querySelector("#address");
+
+
+    // ==============================
+    // CART
+    // ==============================
+
+    let cart =
+        JSON.parse(localStorage.getItem("cart")) || {};
+
+    let products = [];
+
+
+    // ==============================
+    // PRICE
+    // ==============================
 
     function formatPrice(price) {
 
-        return price.toLocaleString("uk-UA") + " грн";
+        return Number(price).toLocaleString("uk-UA") + " грн";
 
     }
 
 
-    function getTotalItems() {
+    // ==============================
+    // CART COUNT
+    // ==============================
+
+    function getCartCount() {
 
         return Object.values(cart).reduce(
-            (sum, quantity) => sum + quantity,
+            (sum, quantity) => {
+                return sum + Number(quantity);
+            },
             0
         );
 
     }
 
 
-    function getProductsTotal() {
+    function updateCartCount() {
 
-        let total = 0;
+        if (!cartCount) {
+            return;
+        }
 
-        Object.keys(cart).forEach(id => {
-
-            const product = products[id];
-
-            if (!product) {
-                return;
-            }
-
-            total += product.price * cart[id];
-
-        });
-
-        return total;
+        cartCount.textContent = getCartCount();
 
     }
 
 
-    function updateCartCount() {
+    // ==============================
+    // GET CART PRODUCTS
+    // ==============================
 
-        const count = getTotalItems();
+    function getCartProducts() {
 
-        if (cartCount) {
-            cartCount.textContent = count;
+        const items = [];
+
+        for (const [id, quantity] of Object.entries(cart)) {
+
+            const product = products.find(
+                item => String(item.id) === String(id)
+            );
+
+            if (!product) {
+                continue;
+            }
+
+            const qty = Number(quantity);
+
+            if (qty <= 0) {
+                continue;
+            }
+
+            items.push({
+                product: product,
+                quantity: qty
+            });
+
+        }
+
+        return items;
+
+    }
+
+
+    // ==============================
+    // EMPTY CART
+    // ==============================
+
+    function showEmptyCheckout() {
+
+        if (checkoutContent) {
+            checkoutContent.style.display = "none";
+        }
+
+        if (checkoutEmpty) {
+            checkoutEmpty.style.display = "block";
         }
 
     }
 
 
-    function renderCheckout() {
+    // ==============================
+    // SHOW CHECKOUT
+    // ==============================
 
-        checkoutItems.innerHTML = "";
+    function showCheckout() {
 
-        let totalItems = 0;
-        let productsTotal = 0;
+        if (checkoutEmpty) {
+            checkoutEmpty.style.display = "none";
+        }
+
+        if (checkoutContent) {
+            checkoutContent.style.display = "flex";
+        }
+
+    }
 
 
-        Object.keys(cart).forEach(id => {
+    // ==============================
+    // LOAD PRODUCTS
+    // ==============================
 
-            const quantity = cart[id];
+    async function loadProducts() {
 
-            const product = products[id];
+        try {
 
-            if (!product || quantity <= 0) {
-                return;
+            const response =
+                await fetch(PRODUCTS_URL);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+
             }
 
+            products =
+                await response.json();
+
+            const cartProducts =
+                getCartProducts();
+
+            if (cartProducts.length === 0) {
+
+                showEmptyCheckout();
+                return;
+
+            }
+
+            showCheckout();
+
+            renderSummary();
+
+        } catch (error) {
+
+            console.error(
+                "Помилка завантаження товарів:",
+                error
+            );
+
+            if (checkoutSummary) {
+
+                checkoutSummary.innerHTML = `
+                    <div class="alert alert-danger">
+                        Не вдалося завантажити товари.
+                        Перевірте, чи запущений Django.
+                    </div>
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    // ==============================
+    // RENDER ORDER SUMMARY
+    // ==============================
+
+    function renderSummary() {
+
+        if (!checkoutSummary) {
+            return;
+        }
+
+        const items =
+            getCartProducts();
+
+        if (items.length === 0) {
+
+            showEmptyCheckout();
+            return;
+
+        }
+
+        let productsTotal = 0;
+
+        let html = "";
+
+
+        // ------------------------------
+        // PRODUCTS
+        // ------------------------------
+
+        items.forEach(item => {
+
+            const product =
+                item.product;
+
+            const quantity =
+                item.quantity;
 
             const itemTotal =
-                product.price * quantity;
-
-
-            totalItems += quantity;
+                Number(product.price) * quantity;
 
             productsTotal += itemTotal;
 
 
-            const item =
-                document.createElement("div");
-
-            item.className =
-                "checkout-product";
+            const image =
+                product.image ||
+                `https://picsum.photos/120/100?random=${product.id}`;
 
 
-            item.innerHTML = `
+            html += `
 
-                <div class="checkout-product-image">
+                <div class="checkout-product">
 
                     <img
-                        src="${product.image}"
+                        src="${image}"
                         alt="${product.name}"
                     >
 
+                    <div class="checkout-product-info">
+
+                        <div class="checkout-product-name">
+                            ${product.name}
+                        </div>
+
+                        <div class="checkout-product-quantity">
+                            ${quantity} ×
+                            ${formatPrice(product.price)}
+                        </div>
+
+                    </div>
+
+                    <div class="checkout-product-price">
+                        ${formatPrice(itemTotal)}
+                    </div>
+
                 </div>
-
-
-                <div class="checkout-product-info">
-
-                    <strong>
-                        ${product.name}
-                    </strong>
-
-                    <span>
-                        ${quantity} ×
-                        ${formatPrice(product.price)}
-                    </span>
-
-                </div>
-
-
-                <strong class="checkout-product-total">
-
-                    ${formatPrice(itemTotal)}
-
-                </strong>
 
             `;
-
-
-            checkoutItems.appendChild(item);
 
         });
 
 
-        if (totalItems === 0) {
+        // ------------------------------
+        // DELIVERY
+        // ------------------------------
 
-            checkoutContent.style.display =
+        const delivery =
+            deliverySelect
+                ? deliverySelect.value
+                : "";
+
+
+        const deliveryPrice =
+            getDeliveryPrice(delivery);
+
+
+        const grandTotal =
+            productsTotal + deliveryPrice;
+
+
+        // ------------------------------
+        // TOTAL
+        // ------------------------------
+
+        html += `
+
+            <hr>
+
+            <div class="summary-line">
+
+                <span>
+                    Товарів:
+                </span>
+
+                <strong>
+                    ${getCartCount()} шт.
+                </strong>
+
+            </div>
+
+
+            <div class="summary-line">
+
+                <span>
+                    Вартість товарів:
+                </span>
+
+                <strong>
+                    ${formatPrice(productsTotal)}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-line">
+
+                <span>
+                    Доставка:
+                </span>
+
+                <strong>
+                    ${
+                        deliveryPrice === 0
+                            ? "За тарифами перевізника"
+                            : formatPrice(deliveryPrice)
+                    }
+                </strong>
+
+            </div>
+
+
+            <div class="summary-grand">
+
+                <span>
+                    Разом:
+                </span>
+
+                <strong>
+                    ${formatPrice(grandTotal)}
+                </strong>
+
+            </div>
+
+        `;
+
+
+        checkoutSummary.innerHTML =
+            html;
+
+    }
+
+
+    // ==============================
+    // DELIVERY PRICE
+    // ==============================
+
+    function getDeliveryPrice(method) {
+
+        // Поки що не додаємо
+        // доставку до вартості замовлення.
+
+        // Нова пошта
+        // Укрпошта
+        // Кур'єр
+
+        // можуть мати різну ціну,
+        // тому зараз показуємо:
+        // "За тарифами перевізника"
+
+        return 0;
+
+    }
+
+
+    // ==============================
+    // DELIVERY FIELDS
+    // ==============================
+
+    function updateDeliveryFields() {
+
+        if (!deliverySelect) {
+            return;
+        }
+
+
+        const method =
+            deliverySelect.value;
+
+
+        // Приховуємо все
+
+        if (branchBlock) {
+            branchBlock.style.display =
                 "none";
+        }
 
-            emptyCheckout.style.display =
-                "block";
+        if (addressBlock) {
+            addressBlock.style.display =
+                "none";
+        }
+
+
+        // ------------------------------
+        // НОВА ПОШТА
+        // ------------------------------
+
+        if (method === "nova_poshta") {
+
+            if (branchBlock) {
+                branchBlock.style.display =
+                    "block";
+            }
+
+        }
+
+
+        // ------------------------------
+        // УКРПОШТА
+        // ------------------------------
+
+        if (method === "ukr_poshta") {
+
+            if (branchBlock) {
+                branchBlock.style.display =
+                    "block";
+            }
+
+        }
+
+
+        // ------------------------------
+        // САМОВИВІЗ
+        // ------------------------------
+
+        if (method === "pickup") {
+
+            if (addressBlock) {
+                addressBlock.style.display =
+                    "block";
+            }
+
+        }
+
+
+        renderSummary();
+
+    }
+
+
+    // ==============================
+    // ORDER ITEMS
+    // ==============================
+
+    function getOrderItems() {
+
+        const items = [];
+
+
+        for (
+            const [id, quantity]
+            of Object.entries(cart)
+        ) {
+
+            const product =
+                products.find(
+                    item =>
+                        String(item.id) === String(id)
+                );
+
+
+            if (!product) {
+                continue;
+            }
+
+
+            const qty =
+                Number(quantity);
+
+
+            if (qty <= 0) {
+                continue;
+            }
+
+
+            items.push({
+
+                product: product.id,
+
+                quantity: qty
+
+            });
+
+        }
+
+
+        return items;
+
+    }
+
+
+    // ==============================
+    // FORM VALUE
+    // ==============================
+
+    function getFormValue(name) {
+
+        if (!checkoutForm) {
+            return "";
+        }
+
+
+        const element =
+            checkoutForm.querySelector(
+                `[name="${name}"]`
+            );
+
+
+        if (!element) {
+            return "";
+        }
+
+
+        return element.value.trim();
+
+    }
+
+
+    // ==============================
+    // DELIVERY ADDRESS
+    // ==============================
+
+    function getDeliveryAddress() {
+
+        const method =
+            getFormValue(
+                "delivery_method"
+            );
+
+
+        if (
+            method === "nova_poshta" ||
+            method === "ukr_poshta"
+        ) {
+
+            return branchInput
+                ? branchInput.value.trim()
+                : "";
+
+        }
+
+
+        if (method === "pickup") {
+
+            return "Самовивіз";
+
+        }
+
+
+        return "";
+
+    }
+
+
+    // ==============================
+    // PAYMENT
+    // ==============================
+
+    function getPaymentMethod() {
+
+        const payment =
+            checkoutForm.querySelector(
+                'input[name="payment_method"]:checked'
+            );
+
+
+        return payment
+            ? payment.value
+            : "";
+
+    }
+
+
+    // ==============================
+    // CREATE ORDER
+    // ==============================
+
+    async function createOrder(event) {
+
+        event.preventDefault();
+
+
+        // ------------------------------
+        // CHECK CART
+        // ------------------------------
+
+        const orderItems =
+            getOrderItems();
+
+
+        if (orderItems.length === 0) {
+
+            alert(
+                "Ваш кошик порожній."
+            );
 
             return;
 
         }
 
 
-        checkoutContent.style.display =
-            "flex";
+        // ------------------------------
+        // BUTTON
+        // ------------------------------
 
-        emptyCheckout.style.display =
-            "none";
-
-
-        checkoutTotalItems.textContent =
-            totalItems;
-
-
-        checkoutProductsTotal.textContent =
-            formatPrice(productsTotal);
+        const submitButton =
+            checkoutForm.querySelector(
+                'button[type="submit"]'
+            );
 
 
-        const selectedDelivery =
-            document.querySelector("#delivery").value;
+        const originalText =
+            submitButton
+                ? submitButton.textContent
+                : "Підтвердити замовлення";
 
 
-        let delivery = 0;
+        if (submitButton) {
 
+            submitButton.disabled = true;
 
-        if (selectedDelivery === "courier") {
-            delivery = 150;
+            submitButton.textContent =
+                "Оформлення...";
+
         }
 
 
-        deliveryPrice.textContent =
-            delivery === 0
-                ? "Безкоштовно"
-                : formatPrice(delivery);
+        // ------------------------------
+        // DATA
+        // ------------------------------
+
+        const orderData = {
+
+            first_name:
+                getFormValue("first_name"),
+
+            last_name:
+                getFormValue("last_name"),
+
+            phone:
+                getFormValue("phone"),
+
+            email:
+                getFormValue("email"),
+
+            city:
+                getFormValue("city"),
+
+            delivery_method:
+                getFormValue(
+                    "delivery_method"
+                ),
+
+            delivery_address:
+                getDeliveryAddress(),
+
+            payment_method:
+                getPaymentMethod(),
+
+            comment:
+                getFormValue("comment"),
+
+            items:
+                orderItems
+
+        };
 
 
-        checkoutGrandTotal.textContent =
-            formatPrice(productsTotal + delivery);
+        console.log(
+            "Відправляємо замовлення:",
+            orderData
+        );
 
 
-        updateCartCount();
+        // ------------------------------
+        // SEND TO DJANGO
+        // ------------------------------
+
+        try {
+
+            const response =
+                await fetch(
+                    ORDERS_URL,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                orderData
+                            )
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Відповідь Django:",
+                data
+            );
+
+
+            // ------------------------------
+            // ERROR
+            // ------------------------------
+
+            if (!response.ok) {
+
+                console.error(
+                    "Помилка API:",
+                    data
+                );
+
+
+                let message =
+                    "Не вдалося оформити замовлення.";
+
+
+                if (data.items) {
+
+                    if (
+                        Array.isArray(
+                            data.items
+                        )
+                    ) {
+
+                        message =
+                            data.items.join(
+                                " "
+                            );
+
+                    } else {
+
+                        message =
+                            data.items;
+
+                    }
+
+                }
+
+
+                else if (
+                    data.delivery_address
+                ) {
+
+                    message =
+                        Array.isArray(
+                            data.delivery_address
+                        )
+                            ? data.delivery_address.join(
+                                " "
+                            )
+                            : data.delivery_address;
+
+                }
+
+
+                else if (data.detail) {
+
+                    message =
+                        data.detail;
+
+                }
+
+
+                else {
+
+                    const firstError =
+                        Object.values(data)[0];
+
+
+                    if (
+                        Array.isArray(
+                            firstError
+                        )
+                    ) {
+
+                        message =
+                            firstError.join(
+                                " "
+                            );
+
+                    }
+
+                }
+
+
+                alert(message);
+
+                return;
+
+            }
+
+
+            // ------------------------------
+            // SUCCESS
+            // ------------------------------
+
+            console.log(
+                "Замовлення успішно створено:",
+                data
+            );
+
+
+            // Видаляємо кошик
+
+            localStorage.removeItem(
+                "cart"
+            );
+
+            cart = {};
+
+
+            updateCartCount();
+
+
+            // Ховаємо форму
+
+            if (checkoutContent) {
+
+                checkoutContent.style.display =
+                    "none";
+
+            }
+
+
+            if (checkoutEmpty) {
+
+                checkoutEmpty.style.display =
+                    "none";
+
+            }
+
+
+            // Показуємо успіх
+
+            if (successBlock) {
+
+                successBlock.style.display =
+                    "block";
+
+            }
+
+
+            // Номер замовлення
+
+            if (successOrderNumber) {
+
+                successOrderNumber.textContent =
+                    data.order_number ||
+                    "MY---------";
+
+            }
+
+
+            // Прокручуємо нагору
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Помилка з'єднання:",
+                error
+            );
+
+
+            alert(
+                "Не вдалося зв'язатися з сервером Django.\n\n" +
+                "Перевірте, чи запущений backend."
+            );
+
+        } finally {
+
+            if (submitButton) {
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.textContent =
+                    originalText;
+
+            }
+
+        }
 
     }
 
 
-    // Кнопка кошика
-
-    const cartButton =
-        document.querySelector("#cartButton");
-
+    // ==============================
+    // CART BUTTON
+    // ==============================
 
     if (cartButton) {
 
@@ -273,211 +975,83 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // Зміна способу доставки
+    // ==============================
+    // SEARCH
+    // ==============================
 
-    const delivery =
-        document.querySelector("#delivery");
+    if (search) {
 
-    const branchBlock =
-        document.querySelector("#branchBlock");
+        search.addEventListener(
+            "keydown",
+            event => {
 
-    const addressBlock =
-        document.querySelector("#addressBlock");
-
-
-    delivery.addEventListener(
-        "change",
-        () => {
-
-            const value =
-                delivery.value;
+                if (
+                    event.key !== "Enter"
+                ) {
+                    return;
+                }
 
 
-            branchBlock.style.display =
-                "none";
-
-            addressBlock.style.display =
-                "none";
+                const text =
+                    search.value.trim();
 
 
-            if (
-                value === "nova_poshta" ||
-                value === "ukrposhta"
-            ) {
+                if (!text) {
 
-                branchBlock.style.display =
-                    "block";
+                    window.location.href =
+                        "index.html";
 
-            }
+                    return;
+
+                }
 
 
-            if (value === "courier") {
-
-                addressBlock.style.display =
-                    "block";
+                window.location.href =
+                    "index.html?search=" +
+                    encodeURIComponent(text);
 
             }
+        );
+
+    }
 
 
-            renderCheckout();
+    // ==============================
+    // DELIVERY CHANGE
+    // ==============================
 
-        }
-    );
+    if (deliverySelect) {
 
+        deliverySelect.addEventListener(
+            "change",
+            updateDeliveryFields
+        );
 
-    // Оформлення замовлення
-
-    const checkoutForm =
-        document.querySelector("#checkoutForm");
-
-
-    checkoutForm.addEventListener(
-        "submit",
-        (event) => {
-
-            event.preventDefault();
+    }
 
 
-            if (getTotalItems() === 0) {
+    // ==============================
+    // FORM SUBMIT
+    // ==============================
 
-                alert(
-                    "Ваш кошик порожній."
-                );
+    if (checkoutForm) {
 
-                return;
+        checkoutForm.addEventListener(
+            "submit",
+            createOrder
+        );
 
-            }
-
-
-            const orderNumber =
-                "MY-" +
-                Date.now()
-                    .toString()
-                    .slice(-8);
+    }
 
 
-            document.querySelector(
-                "#orderNumber"
-            ).textContent =
-                orderNumber;
+    // ==============================
+    // START
+    // ==============================
 
+    updateCartCount();
 
-            // Зберігаємо замовлення
+    updateDeliveryFields();
 
-            const order = {
-
-                number: orderNumber,
-
-                date: new Date()
-                    .toISOString(),
-
-                customer: {
-
-                    firstName:
-                        document.querySelector(
-                            "#firstName"
-                        ).value,
-
-                    lastName:
-                        document.querySelector(
-                            "#lastName"
-                        ).value,
-
-                    phone:
-                        document.querySelector(
-                            "#phone"
-                        ).value,
-
-                    email:
-                        document.querySelector(
-                            "#email"
-                        ).value
-
-                },
-
-                delivery: {
-
-                    city:
-                        document.querySelector(
-                            "#city"
-                        ).value,
-
-                    method:
-                        delivery.value,
-
-                    branch:
-                        document.querySelector(
-                            "#branch"
-                        ).value,
-
-                    address:
-                        document.querySelector(
-                            "#address"
-                        ).value
-
-                },
-
-                payment:
-                    document.querySelector(
-                        'input[name="payment"]:checked'
-                    ).value,
-
-                comment:
-                    document.querySelector(
-                        "#comment"
-                    ).value,
-
-                items: cart,
-
-                total:
-                    getProductsTotal()
-
-            };
-
-
-            localStorage.setItem(
-                "lastOrder",
-                JSON.stringify(order)
-            );
-
-
-            // Очищаємо кошик
-
-            localStorage.removeItem(
-                "cart"
-            );
-
-            localStorage.setItem(
-                "cartCount",
-                "0"
-            );
-
-            cart = {};
-
-
-            // Ховаємо форму
-
-            checkoutContent.style.display =
-                "none";
-
-
-            // Показуємо успіх
-
-            document.querySelector(
-                "#successOrder"
-            ).style.display =
-                "block";
-
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        }
-    );
-
-
-    renderCheckout();
+    loadProducts();
 
 });
