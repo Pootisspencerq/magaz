@@ -28,6 +28,11 @@ urlpatterns = [
 
     # API оголошень
     path("api/announcements/", include("announcements.urls")),
+
+    path(
+    "api/accounts/",
+    include("accounts.urls"),
+),
 ]
 
 

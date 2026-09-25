@@ -1,7 +1,16 @@
 from django.db import models
 
 
+CATEGORY_CHOICES = [
+    ("computers", "Комп'ютери"),
+    ("phones", "Телефони"),
+    ("laptops", "Ноутбуки"),
+    ("accessories", "Аксесуари"),
+]
+
+
 class Product(models.Model):
+
     name = models.CharField(
         max_length=200,
         verbose_name="Назва"
@@ -28,6 +37,7 @@ class Product(models.Model):
 
     category = models.CharField(
         max_length=100,
+        choices=CATEGORY_CHOICES,
         blank=True,
         verbose_name="Категорія"
     )
@@ -58,9 +68,13 @@ class Product(models.Model):
     )
 
     class Meta:
+
         verbose_name = "Товар"
+
         verbose_name_plural = "Товари"
+
         ordering = ["-created_at"]
 
     def __str__(self):
+
         return self.name

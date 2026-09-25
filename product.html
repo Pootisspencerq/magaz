@@ -1,18 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
+    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Власні стилі -->
     <link
         rel="stylesheet"
         href="css/style.css"
@@ -21,403 +31,482 @@
     <title>Товар | VILKA</title>
 </head>
 
-
 <body>
 
+    <!-- =====================================================
+         ШАПКА
+    ====================================================== -->
 
-<!-- =====================================================
-     ШАПКА
-===================================================== -->
+    <header class="bg-white border-bottom">
 
-<header class="bg-white border-bottom">
+        <div class="container py-3">
 
-    <div class="container py-3">
+            <div class="row align-items-center g-3">
 
-        <div class="row align-items-center g-3">
+                <!-- ЛОГОТИП -->
 
+                <div class="col-12 col-lg-3">
 
-            <!-- ЛОГОТИП -->
-
-            <div class="col-12 col-lg-3">
-
-                <a
-                    href="index.html"
-                    class="logo"
-                >
-                    VILKA
-                </a>
-
-            </div>
-
-
-            <!-- ПОШУК -->
-
-            <div class="col-12 col-lg-6">
-
-                <input
-                    type="text"
-                    id="search"
-                    class="form-control form-control-lg"
-                    placeholder="Пошук товарів..."
-                >
-
-            </div>
-
-
-            <!-- КОШИК -->
-
-            <div class="col-12 col-lg-3">
-
-                <button
-                    id="cartButton"
-                    class="btn btn-orange btn-lg w-100"
-                    type="button"
-                >
-
-                    🛒 Кошик
-
-                    <span
-                        id="cartCount"
-                        class="badge bg-dark"
+                    <a
+                        href="index.html"
+                        class="logo"
                     >
-                        0
-                    </span>
+                        VILKA
+                    </a>
 
-                </button>
+                </div>
+
+
+                <!-- ПОШУК -->
+
+                <div class="col-12 col-lg-6">
+
+                    <input
+                        type="text"
+                        id="search"
+                        class="form-control form-control-lg"
+                        placeholder="Пошук товарів..."
+                    >
+
+                </div>
+
+
+                <!-- КОШИК -->
+
+                <div class="col-12 col-lg-3">
+
+                    <button
+                        id="cartButton"
+                        class="btn btn-orange btn-lg w-100"
+                        type="button"
+                    >
+
+                        <i class="bi bi-cart3 me-2"></i>
+                        Кошик
+
+                        <span
+                            id="cartCount"
+                            class="badge bg-dark"
+                        >
+                            0
+                        </span>
+
+                    </button>
+
+                </div>
 
             </div>
+
+
+            <!-- НАВІГАЦІЯ -->
+
+            <nav class="navbar navbar-expand-lg mt-3 p-0">
+
+                <div class="container-fluid p-0">
+
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavigation"
+                        aria-controls="mainNavigation"
+                        aria-expanded="false"
+                        aria-label="Відкрити меню"
+                    >
+                        <i class="bi bi-list"></i>
+                    </button>
+
+
+                    <div
+                        class="collapse navbar-collapse"
+                        id="mainNavigation"
+                    >
+
+                        <ul class="navbar-nav gap-lg-2">
+
+                            <!-- КАТАЛОГ -->
+
+                            <li class="nav-item dropdown">
+
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i class="bi bi-grid me-1"></i>
+                                    Каталог
+                                </a>
+
+
+                                <ul class="dropdown-menu">
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="index.html"
+                                        >
+                                            <i class="bi bi-grid me-2"></i>
+                                            Усі товари
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="index.html?category=computers"
+                                        >
+                                            <i class="bi bi-pc-display me-2"></i>
+                                            Комп'ютери
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="index.html?category=phones"
+                                        >
+                                            <i class="bi bi-phone me-2"></i>
+                                            Телефони
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="index.html?category=laptops"
+                                        >
+                                            <i class="bi bi-laptop me-2"></i>
+                                            Ноутбуки
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="index.html?category=accessories"
+                                        >
+                                            <i class="bi bi-headphones me-2"></i>
+                                            Аксесуари
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+
+                            <!-- ОГОЛОШЕННЯ -->
+
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="announcements.html"
+                                >
+                                    <i class="bi bi-megaphone me-1"></i>
+                                    Оголошення
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         ТОВАР
+    ====================================================== -->
+
+    <main class="container py-5">
+
+
+        <!-- КНОПКА НАЗАД -->
+
+        <div class="mb-4">
+
+            <a
+                href="index.html"
+                class="btn btn-outline-light"
+            >
+                <i class="bi bi-arrow-left me-2"></i>
+                Повернутися до каталогу
+            </a>
 
         </div>
 
 
-        <!-- НАВІГАЦІЯ -->
-
-        <nav class="mt-3">
-
-            <a href="index.html">
-                Каталог
-            </a>
-
-            <a href="#">
-                Комп'ютери
-            </a>
-
-            <a href="#">
-                Телефони
-            </a>
-
-            <a href="#">
-                Ноутбуки
-            </a>
-
-            <a href="#">
-                Аксесуари
-            </a>
-
-        </nav>
-
-    </div>
-
-</header>
-
-
-
-<!-- =====================================================
-     ТОВАР
-===================================================== -->
-
-<main class="container py-5">
-
-
-    <!-- КНОПКА НАЗАД -->
-
-    <div class="mb-4">
-
-        <a
-            href="index.html"
-            class="btn btn-outline-light"
-        >
-            ← Повернутися до каталогу
-        </a>
-
-    </div>
-
-
-    <!-- =================================================
-         ЗАВАНТАЖЕННЯ
-    ================================================= -->
-
-    <div
-        id="productLoading"
-        class="text-center py-5"
-    >
+        <!-- ЗАВАНТАЖЕННЯ -->
 
         <div
-            class="spinner-border"
-            role="status"
-        ></div>
-
-        <p class="mt-3">
-            Завантаження товару...
-        </p>
-
-    </div>
-
-
-
-    <!-- =================================================
-         ПОМИЛКА
-    ================================================= -->
-
-    <div
-        id="productError"
-        class="cart-empty text-center"
-        style="display: none;"
-    >
-
-        <div class="empty-cart-icon">
-            ⚠️
-        </div>
-
-        <h2>
-            Товар не знайдено
-        </h2>
-
-        <p>
-            Не вдалося завантажити інформацію про товар.
-        </p>
-
-        <a
-            href="index.html"
-            class="btn btn-orange"
+            id="productLoading"
+            class="text-center py-5"
         >
-            Повернутися до каталогу
-        </a>
-
-    </div>
-
-
-
-    <!-- =================================================
-         СТОРІНКА ТОВАРУ
-    ================================================= -->
-
-    <div
-        id="productPage"
-        class="product-page"
-        style="display: none;"
-    >
-
-
-        <!-- =============================================
-             ФОТО
-        ============================================== -->
-
-        <div class="product-gallery">
-
-            <img
-                id="productImage"
-                src=""
-                alt=""
-            >
-
-        </div>
-
-
-
-        <!-- =============================================
-             ІНФОРМАЦІЯ
-        ============================================== -->
-
-        <div class="product-info">
-
-
-            <!-- НАЗВА -->
-
-            <h1 id="productName">
-                Товар
-            </h1>
-
-
-            <!-- РЕЙТИНГ -->
 
             <div
-                id="productRating"
-                class="product-rating mb-3"
-            >
-                ⭐ 0.0
-            </div>
+                class="spinner-border"
+                role="status"
+            ></div>
 
-
-            <!-- ОПИС -->
-
-            <p
-                id="productDescription"
-                class="product-description"
-            >
+            <p class="mt-3">
+                Завантаження товару...
             </p>
 
+        </div>
 
-            <!-- ЦІНА -->
 
-            <div
-                id="productPrice"
-                class="product-page-price"
+        <!-- ПОМИЛКА -->
+
+        <div
+            id="productError"
+            class="cart-empty text-center"
+            style="display: none;"
+        >
+
+            <div class="empty-cart-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+
+            <h2>
+                Товар не знайдено
+            </h2>
+
+            <p>
+                Не вдалося завантажити інформацію про товар.
+            </p>
+
+            <a
+                href="index.html"
+                class="btn btn-orange"
             >
-                0 грн
-            </div>
-
-
-            <!-- НАЯВНІСТЬ -->
-
-            <div
-                id="productAvailability"
-                class="availability"
-            >
-                В наявності
-            </div>
-
-
-
-            <!-- =========================================
-                 ХАРАКТЕРИСТИКИ
-            ========================================== -->
-
-            <div class="product-features">
-
-                <h4>
-                    Характеристики
-                </h4>
-
-
-                <div class="feature-row">
-
-                    <span>
-                        Бренд
-                    </span>
-
-                    <strong id="productBrand">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="feature-row">
-
-                    <span>
-                        Категорія
-                    </span>
-
-                    <strong id="productCategory">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="feature-row">
-
-                    <span>
-                        На складі
-                    </span>
-
-                    <strong id="productStock">
-                        0 шт.
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =========================================
-                 КІЛЬКІСТЬ
-            ========================================== -->
-
-            <div class="quantity-box">
-
-                <span>
-                    Кількість:
-                </span>
-
-
-                <button
-                    type="button"
-                    id="quantityMinus"
-                >
-                    −
-                </button>
-
-
-                <span id="quantity">
-                    1
-                </span>
-
-
-                <button
-                    type="button"
-                    id="quantityPlus"
-                >
-                    +
-                </button>
-
-            </div>
-
-
-
-            <!-- =========================================
-                 ДОДАТИ
-            ========================================== -->
-
-            <button
-                id="addToCartButton"
-                type="button"
-                class="btn btn-orange btn-lg w-100 mt-4"
-            >
-                🛒 Додати в кошик
-            </button>
-
-
-            <!-- ПОВІДОМЛЕННЯ -->
-
-            <div
-                id="addToCartMessage"
-                class="mt-3"
-                style="display: none;"
-            >
-                ✓ Товар додано до кошика
-            </div>
-
+                <i class="bi bi-arrow-left me-2"></i>
+                Повернутися до каталогу
+            </a>
 
         </div>
 
-    </div>
 
-</main>
+        <!-- СТОРІНКА ТОВАРУ -->
 
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer class="bg-dark text-white text-center py-4">
-
-    <p class="mb-0">
-        © 2026 VILKA
-    </p>
-
-</footer>
+        <div
+            id="productPage"
+            class="product-page"
+            style="display: none;"
+        >
 
 
+            <!-- ФОТО -->
 
-<!-- =====================================================
-     JS
-===================================================== -->
+            <div class="product-gallery">
 
-<script src="js/product.js"></script>
+                <img
+                    id="productImage"
+                    src=""
+                    alt=""
+                >
+
+            </div>
+
+
+            <!-- ІНФОРМАЦІЯ -->
+
+            <div class="product-info">
+
+
+                <!-- НАЗВА -->
+
+                <h1 id="productName">
+                    Товар
+                </h1>
+
+
+                <!-- РЕЙТИНГ -->
+
+                <div
+                    id="productRating"
+                    class="product-rating mb-3"
+                >
+                    <i class="bi bi-star-fill"></i>
+                    0.0
+                </div>
+
+
+                <!-- ОПИС -->
+
+                <p
+                    id="productDescription"
+                    class="product-description"
+                ></p>
+
+
+                <!-- ЦІНА -->
+
+                <div
+                    id="productPrice"
+                    class="product-page-price"
+                >
+                    0 грн
+                </div>
+
+
+                <!-- НАЯВНІСТЬ -->
+
+                <div
+                    id="productAvailability"
+                    class="availability"
+                >
+                    <i class="bi bi-check-circle me-1"></i>
+                    В наявності
+                </div>
+
+
+                <!-- ХАРАКТЕРИСТИКИ -->
+
+                <div class="product-features">
+
+                    <h4>
+                        Характеристики
+                    </h4>
+
+
+                    <div class="feature-row">
+
+                        <span>
+                            Бренд
+                        </span>
+
+                        <strong id="productBrand">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="feature-row">
+
+                        <span>
+                            Категорія
+                        </span>
+
+                        <strong id="productCategory">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="feature-row">
+
+                        <span>
+                            На складі
+                        </span>
+
+                        <strong id="productStock">
+                            0 шт.
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- КІЛЬКІСТЬ -->
+
+                <div class="quantity-box">
+
+                    <span>
+                        Кількість:
+                    </span>
+
+
+                    <button
+                        type="button"
+                        id="quantityMinus"
+                        aria-label="Зменшити кількість"
+                    >
+                        <i class="bi bi-dash"></i>
+                    </button>
+
+
+                    <span id="quantity">
+                        1
+                    </span>
+
+
+                    <button
+                        type="button"
+                        id="quantityPlus"
+                        aria-label="Збільшити кількість"
+                    >
+                        <i class="bi bi-plus"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- ДОДАТИ ДО КОШИКА -->
+
+                <button
+                    id="addToCartButton"
+                    type="button"
+                    class="btn btn-orange btn-lg w-100 mt-4"
+                >
+                    <i class="bi bi-cart-plus me-2"></i>
+                    Додати в кошик
+                </button>
+
+
+                <!-- ПОВІДОМЛЕННЯ -->
+
+                <div
+                    id="addToCartMessage"
+                    class="mt-3"
+                    style="display: none;"
+                >
+                    <i class="bi bi-check-circle me-2"></i>
+                    Товар додано до кошика
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="bg-dark text-white text-center py-4">
+
+        <p class="mb-0">
+            © 2026 VILKA
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+    <script src="js/product.js"></script>
 
 </body>
 

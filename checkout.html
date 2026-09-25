@@ -7,16 +7,30 @@
 
     <title>Оформлення замовлення | VILKA</title>
 
+    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Основний CSS -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Checkout CSS -->
     <link rel="stylesheet" href="css/checkout.css">
 </head>
 
 <body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header class="bg-white border-bottom">
 
@@ -24,13 +38,24 @@
 
         <div class="row align-items-center g-3">
 
+            <!-- LOGO -->
+
             <div class="col-12 col-lg-3">
 
-                <a href="index.html" class="logo">
-                    VILKA
+                <a
+                    href="index.html"
+                    class="vilka-logo"
+                >
+                    <img
+                        src="img/vilka-logo.png"
+                        alt="VILKA"
+                    >
                 </a>
 
             </div>
+
+
+            <!-- SEARCH -->
 
             <div class="col-12 col-lg-6">
 
@@ -43,6 +68,9 @@
 
             </div>
 
+
+            <!-- CART -->
+
             <div class="col-12 col-lg-3">
 
                 <button
@@ -50,11 +78,17 @@
                     class="btn btn-orange btn-lg w-100"
                     type="button"
                 >
-                    🛒 Кошик
+
+                    <i
+                        class="bi bi-cart3 me-2"
+                        aria-hidden="true"
+                    ></i>
+
+                    Кошик
 
                     <span
                         id="cartCount"
-                        class="badge bg-dark"
+                        class="badge bg-dark ms-2"
                     >
                         0
                     </span>
@@ -70,7 +104,13 @@
 </header>
 
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
 <main class="container py-5">
+
+    <!-- CHECKOUT HEADER -->
 
     <div class="checkout-header">
 
@@ -78,12 +118,21 @@
             href="cart.html"
             class="btn btn-outline-light mb-3"
         >
-            ← Повернутися до кошика
+
+            <i
+                class="bi bi-arrow-left me-2"
+                aria-hidden="true"
+            ></i>
+
+            Повернутися до кошика
+
         </a>
+
 
         <h1>
             Оформлення замовлення
         </h1>
+
 
         <p>
             Заповніть дані для оформлення покупки
@@ -92,7 +141,9 @@
     </div>
 
 
-    <!-- ПОРОЖНІЙ КОШИК -->
+    <!-- =================================================
+         ПОРОЖНІЙ КОШИК
+    ================================================= -->
 
     <div
         id="emptyCheckout"
@@ -101,28 +152,45 @@
     >
 
         <div class="empty-checkout-icon">
-            🛒
+
+            <i
+                class="bi bi-cart-x"
+                aria-hidden="true"
+            ></i>
+
         </div>
+
 
         <h2>
             Кошик порожній
         </h2>
 
+
         <p>
             Додайте товари до кошика перед оформленням замовлення.
         </p>
+
 
         <a
             href="index.html"
             class="btn btn-orange btn-lg"
         >
+
+            <i
+                class="bi bi-shop me-2"
+                aria-hidden="true"
+            ></i>
+
             Перейти до каталогу
+
         </a>
 
     </div>
 
 
-    <!-- CHECKOUT -->
+    <!-- =================================================
+         CHECKOUT
+    ================================================= -->
 
     <div
         id="checkoutContent"
@@ -130,21 +198,35 @@
         style="display: none;"
     >
 
-        <!-- ЛІВА ЧАСТИНА -->
+        <!-- =================================================
+             ЛІВА ЧАСТИНА
+        ================================================= -->
 
         <div class="col-12 col-lg-7">
 
             <form id="checkoutForm">
 
-                <!-- КОНТАКТНІ ДАНІ -->
+                <!-- =================================================
+                     КОНТАКТНІ ДАНІ
+                ================================================= -->
 
                 <section class="checkout-card">
 
                     <h2>
-                        👤 Контактні дані
+
+                        <i
+                            class="bi bi-person me-2"
+                            aria-hidden="true"
+                        ></i>
+
+                        Контактні дані
+
                     </h2>
 
+
                     <div class="row g-3">
+
+                        <!-- ІМ'Я -->
 
                         <div class="col-12 col-md-6">
 
@@ -168,6 +250,8 @@
                         </div>
 
 
+                        <!-- ПРІЗВИЩЕ -->
+
                         <div class="col-12 col-md-6">
 
                             <label
@@ -190,6 +274,8 @@
                         </div>
 
 
+                        <!-- ТЕЛЕФОН -->
+
                         <div class="col-12 col-md-6">
 
                             <label
@@ -211,6 +297,8 @@
 
                         </div>
 
+
+                        <!-- EMAIL -->
 
                         <div class="col-12 col-md-6">
 
@@ -237,14 +325,25 @@
                 </section>
 
 
-                <!-- ДОСТАВКА -->
+                <!-- =================================================
+                     ДОСТАВКА
+                ================================================= -->
 
                 <section class="checkout-card">
 
                     <h2>
-                        🚚 Доставка
+
+                        <i
+                            class="bi bi-truck me-2"
+                            aria-hidden="true"
+                        ></i>
+
+                        Доставка
+
                     </h2>
 
+
+                    <!-- МІСТО -->
 
                     <div class="mb-3">
 
@@ -267,6 +366,8 @@
 
                     </div>
 
+
+                    <!-- СПОСІБ ДОСТАВКИ -->
 
                     <div class="mb-3">
 
@@ -305,7 +406,7 @@
                     </div>
 
 
-                    <!-- НОВА ПОШТА / УКРПОШТА -->
+                    <!-- ВІДДІЛЕННЯ -->
 
                     <div
                         id="branchBlock"
@@ -346,29 +447,40 @@
                             Адреса / місце отримання
                         </label>
 
-                            <input
-                                type="text"
-                                id="branch"
-                                name="delivery_address"
-                                class="form-control"
-                                placeholder="Номер або адреса відділення"
-                            >
+                        <input
+                            type="text"
+                            id="address"
+                            name="pickup_address"
+                            class="form-control"
+                            placeholder="Адреса або місце самовивозу"
+                        >
 
                     </div>
 
                 </section>
 
 
-                <!-- ОПЛАТА -->
+                <!-- =================================================
+                     ОПЛАТА
+                ================================================= -->
 
                 <section class="checkout-card">
 
                     <h2>
-                        💳 Оплата
+
+                        <i
+                            class="bi bi-credit-card me-2"
+                            aria-hidden="true"
+                        ></i>
+
+                        Оплата
+
                     </h2>
 
 
                     <div class="payment-options">
+
+                        <!-- ОПЛАТА ПРИ ОТРИМАННІ -->
 
                         <label class="payment-option">
 
@@ -379,9 +491,16 @@
                                 required
                             >
 
-                            <span>
-                                💵
+
+                            <span class="payment-icon">
+
+                                <i
+                                    class="bi bi-cash-stack"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
+
 
                             <div>
 
@@ -398,6 +517,8 @@
                         </label>
 
 
+                        <!-- КАРТКА -->
+
                         <label class="payment-option">
 
                             <input
@@ -406,9 +527,16 @@
                                 value="card"
                             >
 
-                            <span>
-                                💳
+
+                            <span class="payment-icon">
+
+                                <i
+                                    class="bi bi-credit-card-2-front"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
+
 
                             <div>
 
@@ -429,13 +557,23 @@
                 </section>
 
 
-                <!-- КОМЕНТАР -->
+                <!-- =================================================
+                     КОМЕНТАР
+                ================================================= -->
 
                 <section class="checkout-card">
 
                     <h2>
-                        📝 Коментар
+
+                        <i
+                            class="bi bi-chat-left-text me-2"
+                            aria-hidden="true"
+                        ></i>
+
+                        Коментар
+
                     </h2>
+
 
                     <textarea
                         id="comment"
@@ -448,13 +586,22 @@
                 </section>
 
 
-                <!-- КНОПКА -->
+                <!-- =================================================
+                     КНОПКА
+                ================================================= -->
 
                 <button
                     type="submit"
                     class="btn btn-orange btn-lg w-100 checkout-submit"
                 >
-                    ✅ Підтвердити замовлення
+
+                    <i
+                        class="bi bi-check2-circle me-2"
+                        aria-hidden="true"
+                    ></i>
+
+                    Підтвердити замовлення
+
                 </button>
 
             </form>
@@ -462,14 +609,23 @@
         </div>
 
 
-        <!-- ПРАВА ЧАСТИНА -->
+        <!-- =================================================
+             ПРАВА ЧАСТИНА
+        ================================================= -->
 
         <div class="col-12 col-lg-5">
 
             <section class="checkout-summary">
 
                 <h2>
-                    🛒 Ваше замовлення
+
+                    <i
+                        class="bi bi-bag-check me-2"
+                        aria-hidden="true"
+                    ></i>
+
+                    Ваше замовлення
+
                 </h2>
 
 
@@ -486,7 +642,9 @@
     </div>
 
 
-    <!-- УСПІШНЕ ЗАМОВЛЕННЯ -->
+    <!-- =================================================
+         УСПІШНЕ ЗАМОВЛЕННЯ
+    ================================================= -->
 
     <div
         id="successBlock"
@@ -495,17 +653,26 @@
     >
 
         <div class="success-icon">
-            ✓
+
+            <i
+                class="bi bi-check-lg"
+                aria-hidden="true"
+            ></i>
+
         </div>
+
 
         <h1>
             Замовлення прийнято!
         </h1>
 
+
         <p>
-            Дякуємо за покупку ❤️
+            Дякуємо за покупку!
         </p>
 
+
+        <!-- НОМЕР ЗАМОВЛЕННЯ -->
 
         <div class="order-number-box">
 
@@ -519,8 +686,10 @@
 
 
         <p class="success-text">
+
             Наш менеджер зв'яжеться з вами найближчим часом
             для підтвердження замовлення.
+
         </p>
 
 
@@ -528,13 +697,24 @@
             href="index.html"
             class="btn btn-orange btn-lg"
         >
-            🏠 Повернутися до магазину
+
+            <i
+                class="bi bi-house me-2"
+                aria-hidden="true"
+            ></i>
+
+            Повернутися до магазину
+
         </a>
 
     </div>
 
 </main>
 
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
 
 <footer class="border-top mt-5">
 
@@ -549,7 +729,10 @@
 </footer>
 
 
+<!-- JS -->
+
 <script src="js/checkout.js"></script>
 
 </body>
+
 </html>

@@ -387,8 +387,8 @@
 
 .vilka-logo img {
     display: block;
-    width: 150px;
-    height: 55px;
+    width: 200px;
+    height: 70px;
     object-fit: contain;
     object-position: left center;
 }
@@ -397,7 +397,7 @@
 
 @media (max-width: 576px) {
     .vilka-logo img {
-        width: 125px;
-        height: 45px;
+        width: 160px;
+        height: 55px;
     }
 }

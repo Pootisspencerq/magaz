@@ -276,16 +276,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 `https://picsum.photos/120/100?random=${product.id}`;
 
 
-            html += `
+                html += `
 
-                <div class="checkout-product">
+                    <div class="checkout-product">
 
-                    <img
-                        src="${image}"
-                        alt="${product.name}"
-                    >
+                        <div class="checkout-product-image">
+                            <img
+                                src="${image}"
+                                alt="${product.name}"
+                            >
+                        </div>
 
-                    <div class="checkout-product-info">
+                        <div class="checkout-product-info">
 
                         <div class="checkout-product-name">
                             ${product.name}

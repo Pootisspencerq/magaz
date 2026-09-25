@@ -349,9 +349,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // -----------------------------------------------
 
         productRating.innerHTML =
-            "⭐ " +
+            '<i class="bi bi-star-fill"></i> ' +
             product.rating;
-
 
         // -----------------------------------------------
         // ОПИС

@@ -1,269 +1,666 @@
-const API_BASE = "http://127.0.0.1:8000/api";
+document.addEventListener("DOMContentLoaded", () => {
 
-const ANNOUNCEMENTS_URL = `${API_BASE}/announcements/`;
+    // =========================================================
+    // API
+    // =========================================================
 
+    const API_BASE = "http://127.0.0.1:8000/api";
 
-/* ========================================
-   ЕЛЕМЕНТИ СТОРІНКИ
-======================================== */
-
-const announcementsContainer =
-    document.getElementById("announcements");
-
-const loading =
-    document.getElementById("loading");
-
-const emptyAnnouncements =
-    document.getElementById("emptyAnnouncements");
-
-const errorMessage =
-    document.getElementById("errorMessage");
-
-const createAnnouncement =
-    document.getElementById("createAnnouncement");
-
-const announcementForm =
-    document.getElementById("announcementForm");
-
-const formError =
-    document.getElementById("formError");
-
-const submitAnnouncement =
-    document.getElementById("submitAnnouncement");
-
-const showCreateButton =
-    document.getElementById("showCreateButton");
-
-const emptyCreateButton =
-    document.getElementById("emptyCreateButton");
-
-const closeCreateButton =
-    document.getElementById("closeCreateButton");
-
-const cancelAnnouncement =
-    document.getElementById("cancelAnnouncement");
-
-const cartButton =
-    document.getElementById("cartButton");
-
-const cartCount =
-    document.getElementById("cartCount");
-
-const searchInput =
-    document.getElementById("search");
+    const ANNOUNCEMENTS_URL =
+        `${API_BASE}/announcements/`;
 
 
-/* ========================================
-   ЦІНА
-======================================== */
+    // =========================================================
+    // ЕЛЕМЕНТИ СТОРІНКИ
+    // =========================================================
 
-function formatPrice(price) {
+    const announcementsContainer =
+        document.getElementById("announcements");
 
-    return Number(price).toLocaleString("uk-UA", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    });
+    const loading =
+        document.getElementById("loading");
 
-}
+    const emptyAnnouncements =
+        document.getElementById("emptyAnnouncements");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+    const createAnnouncement =
+        document.getElementById("createAnnouncement");
+
+    const announcementForm =
+        document.getElementById("announcementForm");
+
+    const formError =
+        document.getElementById("formError");
+
+    const submitAnnouncement =
+        document.getElementById("submitAnnouncement");
+
+    const showCreateButton =
+        document.getElementById("showCreateButton");
+
+    const emptyCreateButton =
+        document.getElementById("emptyCreateButton");
+
+    const closeCreateButton =
+        document.getElementById("closeCreateButton");
+
+    const cancelAnnouncement =
+        document.getElementById("cancelAnnouncement");
+
+    const cartButton =
+        document.getElementById("cartButton");
+
+    const cartCount =
+        document.getElementById("cartCount");
+
+    const searchInput =
+        document.getElementById("search");
 
 
-/* ========================================
-   КОШИК
-======================================== */
+    // =========================================================
+    // ЦІНА
+    // =========================================================
 
-function getCart() {
+    function formatPrice(price) {
 
-    try {
-
-        return JSON.parse(
-            localStorage.getItem("cart")
-        ) || [];
-
-    } catch {
-
-        return [];
+        return Number(price).toLocaleString("uk-UA", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
 
     }
 
-}
 
+    // =========================================================
+    // КОШИК
+    // =========================================================
 
-function updateCartCount() {
+    function getCart() {
 
-    const cart = getCart();
+        try {
 
-    const count = cart.reduce(
-        (sum, item) => {
-            return sum + Number(item.quantity || 0);
-        },
-        0
-    );
+            const savedCart =
+                JSON.parse(
+                    localStorage.getItem("cart")
+                );
 
-    cartCount.textContent = count;
+            if (!savedCart) {
+                return {};
+            }
 
-}
+            return savedCart;
 
+        } catch (error) {
 
-/* ========================================
-   ФОРМА
-======================================== */
+            console.error(
+                "Помилка читання кошика:",
+                error
+            );
 
-function showCreateForm() {
+            return {};
 
-    createAnnouncement.classList.remove("d-none");
-
-    formError.classList.add("d-none");
-
-    createAnnouncement.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-
-}
-
-
-function hideCreateForm() {
-
-    createAnnouncement.classList.add("d-none");
-
-    formError.classList.add("d-none");
-
-    announcementForm.reset();
-
-}
-
-
-/* ========================================
-   НАЗВИ КАТЕГОРІЙ
-======================================== */
-
-function categoryName(value) {
-
-    const categories = {
-
-        computers: "Комп'ютери",
-
-        phones: "Телефони",
-
-        laptops: "Ноутбуки",
-
-        accessories: "Аксесуари",
-
-        gaming: "Ігрова техніка",
-
-        other: "Інше"
-
-    };
-
-    return categories[value] || value;
-
-}
-
-
-/* ========================================
-   СТАН ТОВАРУ
-======================================== */
-
-function conditionName(value) {
-
-    if (value === "new") {
-        return "Новий";
-    }
-
-    return "Вживаний";
-
-}
-
-
-/* ========================================
-   ДАТА
-======================================== */
-
-function formatDate(dateString) {
-
-    if (!dateString) {
-        return "";
-    }
-
-    const date = new Date(dateString);
-
-    if (Number.isNaN(date.getTime())) {
-        return "";
-    }
-
-    return date.toLocaleDateString(
-        "uk-UA",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
         }
-    );
 
-}
-
-
-/* ========================================
-   СТВОРЕННЯ КАРТКИ
-======================================== */
-
-function createAnnouncementCard(item) {
-
-    const column =
-        document.createElement("div");
-
-    column.className =
-        "col-12 col-sm-6 col-lg-4";
+    }
 
 
-    const card =
-        document.createElement("article");
+    function updateCartCount() {
 
-    card.className =
-        "announcement-card";
+        if (!cartCount) {
+            return;
+        }
 
-
-    /* Фото */
-
-    const imageBlock =
-        document.createElement("div");
-
-    imageBlock.className =
-        "announcement-image";
+        const cart =
+            getCart();
 
 
-    if (item.image) {
+        /*
+         * Формат кошика:
+         *
+         * {
+         *     "1": 2,
+         *     "3": 1,
+         *     "7": 4
+         * }
+         */
 
-        const image =
-            document.createElement("img");
-
-        image.src = item.image;
-
-        image.alt = item.title;
-
-        image.loading = "lazy";
+        let count = 0;
 
 
-        image.onerror = function () {
+        Object.values(cart).forEach(quantity => {
 
-            image.remove();
+            const number =
+                Number(quantity);
 
-            const noImage =
-                document.createElement("div");
+            if (!Number.isNaN(number)) {
+                count += number;
+            }
 
-            noImage.className =
-                "announcement-no-image";
+        });
 
-            noImage.textContent = "📷";
 
-            imageBlock.appendChild(noImage);
+        cartCount.textContent =
+            count;
+
+    }
+
+
+    // =========================================================
+    // ФОРМА СТВОРЕННЯ
+    // =========================================================
+
+    function showCreateForm() {
+
+        if (!createAnnouncement) {
+            return;
+        }
+
+        createAnnouncement.classList.remove(
+            "d-none"
+        );
+
+
+        if (formError) {
+
+            formError.classList.add(
+                "d-none"
+            );
+
+            formError.textContent = "";
+
+        }
+
+
+        createAnnouncement.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    function hideCreateForm() {
+
+        if (!createAnnouncement) {
+            return;
+        }
+
+        createAnnouncement.classList.add(
+            "d-none"
+        );
+
+
+        if (formError) {
+
+            formError.classList.add(
+                "d-none"
+            );
+
+            formError.textContent = "";
+
+        }
+
+
+        if (announcementForm) {
+            announcementForm.reset();
+        }
+
+    }
+
+
+    // =========================================================
+    // НАЗВИ КАТЕГОРІЙ
+    // =========================================================
+
+    function categoryName(value) {
+
+        const categories = {
+
+            computers: "Комп'ютери",
+
+            phones: "Телефони",
+
+            laptops: "Ноутбуки",
+
+            accessories: "Аксесуари",
+
+            gaming: "Ігрова техніка",
+
+            other: "Інше"
 
         };
 
 
-        imageBlock.appendChild(image);
+        return categories[value] || value || "Інше";
 
-    } else {
+    }
+
+
+    // =========================================================
+    // СТАН ТОВАРУ
+    // =========================================================
+
+    function conditionName(value) {
+
+        if (value === "new") {
+            return "Новий";
+        }
+
+        if (value === "used") {
+            return "Вживаний";
+        }
+
+        return value || "Не вказано";
+
+    }
+
+
+    // =========================================================
+    // ДАТА
+    // =========================================================
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return "";
+        }
+
+
+        const date =
+            new Date(dateString);
+
+
+        if (Number.isNaN(date.getTime())) {
+            return "";
+        }
+
+
+        return date.toLocaleDateString(
+            "uk-UA",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    // =========================================================
+    // BOOTSTRAP ICON
+    // =========================================================
+
+    function createIcon(
+        iconClass,
+        extraClass = ""
+    ) {
+
+        const icon =
+            document.createElement("i");
+
+        icon.className =
+            `bi ${iconClass} ${extraClass}`.trim();
+
+        return icon;
+
+    }
+
+
+    // =========================================================
+    // СТВОРЕННЯ КАРТКИ ОГОЛОШЕННЯ
+    // =========================================================
+
+    function createAnnouncementCard(item) {
+
+        const column =
+            document.createElement("div");
+
+        column.className =
+            "col-12 col-sm-6 col-lg-4";
+
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "announcement-card";
+
+
+        // =====================================================
+        // ФОТО
+        // =====================================================
+
+        const imageBlock =
+            document.createElement("div");
+
+        imageBlock.className =
+            "announcement-image";
+
+
+        if (item.image) {
+
+            const image =
+                document.createElement("img");
+
+            image.src =
+                item.image;
+
+            image.alt =
+                item.title || "Товар";
+
+            image.loading =
+                "lazy";
+
+
+            image.onerror = function () {
+
+                image.remove();
+
+                const noImage =
+                    createNoImageBlock();
+
+                imageBlock.appendChild(
+                    noImage
+                );
+
+            };
+
+
+            imageBlock.appendChild(
+                image
+            );
+
+        } else {
+
+            const noImage =
+                createNoImageBlock();
+
+            imageBlock.appendChild(
+                noImage
+            );
+
+        }
+
+
+        // =====================================================
+        // ТІЛО КАРТКИ
+        // =====================================================
+
+        const body =
+            document.createElement("div");
+
+        body.className =
+            "announcement-body";
+
+
+        // =====================================================
+        // НАЗВА
+        // =====================================================
+
+        const title =
+            document.createElement("h2");
+
+        title.className =
+            "announcement-title";
+
+        title.textContent =
+            item.title || "Без назви";
+
+
+        // =====================================================
+        // ОПИС
+        // =====================================================
+
+        const description =
+            document.createElement("p");
+
+        description.className =
+            "announcement-description";
+
+        description.textContent =
+            item.description || "Опис відсутній";
+
+
+        // =====================================================
+        // ЦІНА
+        // =====================================================
+
+        const price =
+            document.createElement("div");
+
+        price.className =
+            "announcement-price";
+
+        price.textContent =
+            `${formatPrice(item.price)} грн`;
+
+
+        // =====================================================
+        // META
+        // =====================================================
+
+        const meta =
+            document.createElement("div");
+
+        meta.className =
+            "announcement-meta";
+
+
+        // Категорія
+
+        const category =
+            document.createElement("span");
+
+        category.className =
+            "announcement-badge";
+
+
+        const categoryIcon =
+            createIcon(
+                "bi-grid",
+                "me-1"
+            );
+
+
+        category.appendChild(
+            categoryIcon
+        );
+
+        category.appendChild(
+            document.createTextNode(
+                categoryName(item.category)
+            )
+        );
+
+
+        // Стан
+
+        const condition =
+            document.createElement("span");
+
+        condition.className =
+            "announcement-badge";
+
+
+        const conditionIcon =
+            createIcon(
+                "bi-box-seam",
+                "me-1"
+            );
+
+
+        condition.appendChild(
+            conditionIcon
+        );
+
+        condition.appendChild(
+            document.createTextNode(
+                conditionName(item.condition)
+            )
+        );
+
+
+        // Місто
+
+        const city =
+            document.createElement("span");
+
+        city.className =
+            "announcement-badge";
+
+
+        const cityIcon =
+            createIcon(
+                "bi-geo-alt",
+                "me-1"
+            );
+
+
+        city.appendChild(
+            cityIcon
+        );
+
+        city.appendChild(
+            document.createTextNode(
+                item.city || "Місто не вказано"
+            )
+        );
+
+
+        meta.append(
+            category,
+            condition,
+            city
+        );
+
+
+        // =====================================================
+        // ПРОДАВЕЦЬ
+        // =====================================================
+
+        const seller =
+            document.createElement("div");
+
+        seller.className =
+            "announcement-seller";
+
+
+        const sellerIcon =
+            createIcon(
+                "bi-person",
+                "me-1"
+            );
+
+
+        seller.appendChild(
+            sellerIcon
+        );
+
+        seller.appendChild(
+            document.createTextNode(
+                `Продавець: ${item.seller_name || "Не вказано"}`
+            )
+        );
+
+
+        // =====================================================
+        // ТЕЛЕФОН
+        // =====================================================
+
+        const phone =
+            document.createElement("div");
+
+        phone.className =
+            "announcement-seller";
+
+
+        const phoneIcon =
+            createIcon(
+                "bi-telephone",
+                "me-1"
+            );
+
+
+        phone.appendChild(
+            phoneIcon
+        );
+
+        phone.appendChild(
+            document.createTextNode(
+                item.phone || "Телефон не вказано"
+            )
+        );
+
+
+        // =====================================================
+        // ДАТА
+        // =====================================================
+
+        const date =
+            document.createElement("div");
+
+        date.className =
+            "announcement-date";
+
+
+        const dateIcon =
+            createIcon(
+                "bi-calendar3",
+                "me-1"
+            );
+
+
+        date.appendChild(
+            dateIcon
+        );
+
+        date.appendChild(
+            document.createTextNode(
+                `Опубліковано: ${formatDate(item.created_at)}`
+            )
+        );
+
+
+        // =====================================================
+        // ДОДАЄМО ЕЛЕМЕНТИ
+        // =====================================================
+
+        body.append(
+            title,
+            description,
+            price,
+            meta,
+            seller,
+            phone,
+            date
+        );
+
+
+        card.append(
+            imageBlock,
+            body
+        );
+
+
+        column.appendChild(
+            card
+        );
+
+
+        return column;
+
+    }
+
+
+    // =========================================================
+    // БЛОК БЕЗ ФОТО
+    // =========================================================
+
+    function createNoImageBlock() {
 
         const noImage =
             document.createElement("div");
@@ -271,487 +668,601 @@ function createAnnouncementCard(item) {
         noImage.className =
             "announcement-no-image";
 
-        noImage.textContent = "📷";
 
-        imageBlock.appendChild(noImage);
+        const icon =
+            createIcon(
+                "bi-image"
+            );
+
+
+        noImage.appendChild(
+            icon
+        );
+
+
+        return noImage;
 
     }
 
 
-    /* Тіло */
+    // =========================================================
+    // ВІДОБРАЖЕННЯ ОГОЛОШЕНЬ
+    // =========================================================
 
-    const body =
-        document.createElement("div");
+    function renderAnnouncements(items) {
 
-    body.className =
-        "announcement-body";
+        if (!announcementsContainer) {
+            return;
+        }
 
 
-    /* Назва */
+        announcementsContainer.innerHTML =
+            "";
 
-    const title =
-        document.createElement("h2");
 
-    title.className =
-        "announcement-title";
+        if (emptyAnnouncements) {
 
-    title.textContent =
-        item.title;
-
-
-    /* Опис */
-
-    const description =
-        document.createElement("p");
-
-    description.className =
-        "announcement-description";
-
-    description.textContent =
-        item.description;
-
-
-    /* Ціна */
-
-    const price =
-        document.createElement("div");
-
-    price.className =
-        "announcement-price";
-
-    price.textContent =
-        `${formatPrice(item.price)} грн`;
-
-
-    /* Meta */
-
-    const meta =
-        document.createElement("div");
-
-    meta.className =
-        "announcement-meta";
-
-
-    const category =
-        document.createElement("span");
-
-    category.className =
-        "announcement-badge";
-
-    category.textContent =
-        categoryName(item.category);
-
-
-    const condition =
-        document.createElement("span");
-
-    condition.className =
-        "announcement-badge";
-
-    condition.textContent =
-        conditionName(item.condition);
-
-
-    const city =
-        document.createElement("span");
-
-    city.className =
-        "announcement-badge";
-
-    city.textContent =
-        `📍 ${item.city}`;
-
-
-    meta.append(
-        category,
-        condition,
-        city
-    );
-
-
-    /* Продавець */
-
-    const seller =
-        document.createElement("div");
-
-    seller.className =
-        "announcement-seller";
-
-    seller.textContent =
-        `Продавець: ${item.seller_name}`;
-
-
-    /* Телефон */
-
-    const phone =
-        document.createElement("div");
-
-    phone.className =
-        "announcement-seller";
-
-    phone.textContent =
-        `☎ ${item.phone}`;
-
-
-    /* Дата */
-
-    const date =
-        document.createElement("div");
-
-    date.className =
-        "announcement-date";
-
-    date.textContent =
-        `Опубліковано: ${formatDate(item.created_at)}`;
-
-
-    body.append(
-        title,
-        description,
-        price,
-        meta,
-        seller,
-        phone,
-        date
-    );
-
-
-    card.append(
-        imageBlock,
-        body
-    );
-
-
-    column.appendChild(card);
-
-
-    return column;
-
-}
-
-
-/* ========================================
-   ВІДОБРАЖЕННЯ ОГОЛОШЕНЬ
-======================================== */
-
-function renderAnnouncements(items) {
-
-    announcementsContainer.innerHTML = "";
-
-    emptyAnnouncements.classList.add("d-none");
-
-
-    if (!items.length) {
-
-        emptyAnnouncements.classList.remove(
-            "d-none"
-        );
-
-        return;
-
-    }
-
-
-    items.forEach(item => {
-
-        announcementsContainer.appendChild(
-            createAnnouncementCard(item)
-        );
-
-    });
-
-}
-
-
-/* ========================================
-   ЗАВАНТАЖЕННЯ ОГОЛОШЕНЬ
-======================================== */
-
-async function loadAnnouncements() {
-
-    loading.classList.remove("d-none");
-
-    errorMessage.classList.add("d-none");
-
-
-    try {
-
-        const response =
-            await fetch(ANNOUNCEMENTS_URL);
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
+            emptyAnnouncements.classList.add(
+                "d-none"
             );
 
         }
 
 
-        const data =
-            await response.json();
+        // Якщо немає оголошень
+
+        if (!items.length) {
+
+            if (emptyAnnouncements) {
+
+                emptyAnnouncements.classList.remove(
+                    "d-none"
+                );
+
+            }
+
+            return;
+
+        }
 
 
-        const items =
-            Array.isArray(data)
-                ? data
-                : data.results || [];
+        // Виводимо оголошення
 
+        items.forEach(item => {
 
-        renderAnnouncements(items);
+            announcementsContainer.appendChild(
+                createAnnouncementCard(item)
+            );
 
-
-    } catch (error) {
-
-        console.error(
-            "Помилка завантаження оголошень:",
-            error
-        );
-
-
-        errorMessage.textContent =
-            "Не вдалося завантажити оголошення. Перевірте, чи запущений Django-сервер.";
-
-
-        errorMessage.classList.remove(
-            "d-none"
-        );
-
-    } finally {
-
-        loading.classList.add("d-none");
+        });
 
     }
 
-}
+
+    // =========================================================
+    // ЗАВАНТАЖЕННЯ ОГОЛОШЕНЬ
+    // =========================================================
+
+    async function loadAnnouncements() {
+
+        // Показуємо loading
+
+        if (loading) {
+
+            loading.classList.remove(
+                "d-none"
+            );
+
+            loading.textContent =
+                "Завантаження оголошень...";
+
+        }
 
 
-/* ========================================
-   СТВОРЕННЯ ОГОЛОШЕННЯ
-======================================== */
+        // Ховаємо стару помилку
 
-async function createNewAnnouncement(event) {
+        if (errorMessage) {
 
-    event.preventDefault();
+            errorMessage.classList.add(
+                "d-none"
+            );
 
+            errorMessage.textContent =
+                "";
 
-    formError.classList.add("d-none");
-
-
-    submitAnnouncement.disabled = true;
-
-    submitAnnouncement.textContent =
-        "Публікація...";
+        }
 
 
-    try {
+        try {
 
-        const formData =
-            new FormData(
-                announcementForm
+            console.log(
+                "Завантаження оголошень:",
+                ANNOUNCEMENTS_URL
             );
 
 
-        const response =
-            await fetch(
-                `${ANNOUNCEMENTS_URL}create/`,
-                {
-                    method: "POST",
-                    body: formData
-                }
+            const response =
+                await fetch(
+                    ANNOUNCEMENTS_URL,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            console.log(
+                "HTTP статус:",
+                response.status
             );
 
 
-        const data =
-            await response.json();
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+
+            }
 
 
-        if (!response.ok) {
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Дані оголошень:",
+                data
+            );
+
+
+            let items = [];
+
+
+            // Django REST Framework:
+            // { results: [...] }
+
+            if (
+                data &&
+                Array.isArray(data.results)
+            ) {
+
+                items =
+                    data.results;
+
+            }
+
+            // Звичайний масив:
+            // [...]
+
+            else if (
+                Array.isArray(data)
+            ) {
+
+                items =
+                    data;
+
+            }
+
+            // Інший формат
+
+            else if (
+                data &&
+                Array.isArray(data.announcements)
+            ) {
+
+                items =
+                    data.announcements;
+
+            }
+
+
+            renderAnnouncements(
+                items
+            );
+
+
+        } catch (error) {
 
             console.error(
+                "Помилка завантаження оголошень:",
+                error
+            );
+
+
+            if (errorMessage) {
+
+                errorMessage.textContent =
+                    "Не вдалося завантажити оголошення. Перевірте, чи запущений Django-сервер та чи доступний API.";
+
+                errorMessage.classList.remove(
+                    "d-none"
+                );
+
+            }
+
+
+            // При помилці прибираємо старий список
+
+            if (announcementsContainer) {
+
+                announcementsContainer.innerHTML =
+                    "";
+
+            }
+
+
+        } finally {
+
+            // =================================================
+            // ГОЛОВНЕ ВИПРАВЛЕННЯ
+            // Завжди прибираємо "Завантаження..."
+            // =================================================
+
+            if (loading) {
+
+                loading.classList.add(
+                    "d-none"
+                );
+
+            }
+
+        }
+
+    }
+
+
+    // =========================================================
+    // СТВОРЕННЯ ОГОЛОШЕННЯ
+    // =========================================================
+
+    async function createNewAnnouncement(event) {
+
+        event.preventDefault();
+
+
+        if (!announcementForm) {
+            return;
+        }
+
+
+        if (formError) {
+
+            formError.classList.add(
+                "d-none"
+            );
+
+            formError.textContent =
+                "";
+
+        }
+
+
+        if (submitAnnouncement) {
+
+            submitAnnouncement.disabled =
+                true;
+
+            submitAnnouncement.innerHTML =
+                `
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    Публікація...
+                `;
+
+        }
+
+
+        try {
+
+            const formData =
+                new FormData(
+                    announcementForm
+                );
+
+
+            console.log(
+                "Відправляємо оголошення..."
+            );
+
+
+            const response =
+                await fetch(
+                    `${ANNOUNCEMENTS_URL}create/`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            let data = {};
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+
+            }
+
+
+            console.log(
                 "Відповідь Django:",
                 data
             );
 
 
-            let message =
-                "Не вдалося створити оголошення.";
+            if (!response.ok) {
+
+                let message =
+                    "Не вдалося створити оголошення.";
 
 
-            if (
-                data &&
-                typeof data === "object"
-            ) {
+                if (
+                    data &&
+                    typeof data === "object"
+                ) {
 
-                const errors = [];
+                    const errors = [];
 
 
-                Object.entries(data).forEach(
-                    ([field, value]) => {
+                    Object.entries(data).forEach(
+                        ([field, value]) => {
 
-                        if (
-                            Array.isArray(value)
-                        ) {
+                            if (
+                                Array.isArray(value)
+                            ) {
 
-                            errors.push(
-                                `${field}: ${value.join(", ")}`
-                            );
+                                errors.push(
+                                    `${field}: ${value.join(", ")}`
+                                );
 
-                        } else if (
-                            typeof value === "string"
-                        ) {
+                            } else if (
+                                typeof value === "string"
+                            ) {
 
-                            errors.push(
-                                `${field}: ${value}`
-                            );
+                                errors.push(
+                                    `${field}: ${value}`
+                                );
+
+                            } else if (
+                                value &&
+                                typeof value === "object"
+                            ) {
+
+                                errors.push(
+                                    `${field}: ${JSON.stringify(value)}`
+                                );
+
+                            }
 
                         }
+                    );
+
+
+                    if (errors.length) {
+
+                        message =
+                            errors.join("\n");
 
                     }
-                );
-
-
-                if (errors.length) {
-
-                    message =
-                        errors.join("\n");
 
                 }
+
+
+                throw new Error(
+                    message
+                );
 
             }
 
 
-            throw new Error(message);
+            // =================================================
+            // УСПІШНЕ СТВОРЕННЯ
+            // =================================================
+
+            announcementForm.reset();
+
+
+            if (createAnnouncement) {
+
+                createAnnouncement.classList.add(
+                    "d-none"
+                );
+
+            }
+
+
+            await loadAnnouncements();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Помилка створення оголошення:",
+                error
+            );
+
+
+            if (formError) {
+
+                formError.textContent =
+                    error.message ||
+                    "Сталася невідома помилка.";
+
+                formError.classList.remove(
+                    "d-none"
+                );
+
+            }
+
+        } finally {
+
+            if (submitAnnouncement) {
+
+                submitAnnouncement.disabled =
+                    false;
+
+                submitAnnouncement.innerHTML =
+                    `
+                        <i class="bi bi-cloud-arrow-up me-2"></i>
+                        Опублікувати оголошення
+                    `;
+
+            }
 
         }
 
+    }
 
-        /* Успішне створення */
 
-        announcementForm.reset();
+    // =========================================================
+    // ПОШУК
+    // =========================================================
 
-        createAnnouncement.classList.add(
-            "d-none"
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key !== "Enter"
+                ) {
+                    return;
+                }
+
+
+                const query =
+                    searchInput.value.trim();
+
+
+                if (query) {
+
+                    window.location.href =
+                        `index.html?search=${encodeURIComponent(query)}`;
+
+                } else {
+
+                    window.location.href =
+                        "index.html";
+
+                }
+
+            }
         );
 
-
-        await loadAnnouncements();
-
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+    }
 
 
-    } catch (error) {
+    // =========================================================
+    // КНОПКА СТВОРЕННЯ
+    // =========================================================
 
-        console.error(error);
+    if (showCreateButton) {
 
-
-        formError.textContent =
-            error.message;
-
-
-        formError.classList.remove(
-            "d-none"
+        showCreateButton.addEventListener(
+            "click",
+            showCreateForm
         );
 
-    } finally {
+    }
 
-        submitAnnouncement.disabled = false;
 
-        submitAnnouncement.textContent =
-            "Опублікувати оголошення";
+    // =========================================================
+    // КНОПКА СТВОРЕННЯ В EMPTY
+    // =========================================================
+
+    if (emptyCreateButton) {
+
+        emptyCreateButton.addEventListener(
+            "click",
+            showCreateForm
+        );
 
     }
 
-}
 
+    // =========================================================
+    // ЗАКРИТТЯ
+    // =========================================================
 
-/* ========================================
-   ПОШУК
-======================================== */
+    if (closeCreateButton) {
 
-searchInput.addEventListener(
-    "keydown",
-    event => {
-
-        if (event.key !== "Enter") {
-            return;
-        }
-
-
-        const query =
-            searchInput.value.trim();
-
-
-        if (query) {
-
-            window.location.href =
-                `index.html?search=${encodeURIComponent(query)}`;
-
-        } else {
-
-            window.location.href =
-                "index.html";
-
-        }
+        closeCreateButton.addEventListener(
+            "click",
+            hideCreateForm
+        );
 
     }
-);
 
 
-/* ========================================
-   КНОПКИ
-======================================== */
+    // =========================================================
+    // СКАСУВАННЯ
+    // =========================================================
 
-showCreateButton.addEventListener(
-    "click",
-    showCreateForm
-);
+    if (cancelAnnouncement) {
 
-
-emptyCreateButton.addEventListener(
-    "click",
-    showCreateForm
-);
-
-
-closeCreateButton.addEventListener(
-    "click",
-    hideCreateForm
-);
-
-
-cancelAnnouncement.addEventListener(
-    "click",
-    hideCreateForm
-);
-
-
-announcementForm.addEventListener(
-    "submit",
-    createNewAnnouncement
-);
-
-
-cartButton.addEventListener(
-    "click",
-    () => {
-
-        window.location.href =
-            "cart.html";
+        cancelAnnouncement.addEventListener(
+            "click",
+            hideCreateForm
+        );
 
     }
-);
 
 
-/* ========================================
-   ЗАПУСК
-======================================== */
+    // =========================================================
+    // SUBMIT
+    // =========================================================
 
-updateCartCount();
+    if (announcementForm) {
 
-loadAnnouncements();
+        announcementForm.addEventListener(
+            "submit",
+            createNewAnnouncement
+        );
+
+    }
+
+
+    // =========================================================
+    // КОШИК
+    // =========================================================
+
+    if (cartButton) {
+
+        cartButton.addEventListener(
+            "click",
+            () => {
+
+                window.location.href =
+                    "cart.html";
+
+            }
+        );
+
+    }
+
+
+    // =========================================================
+    // ЗАПУСК
+    // =========================================================
+
+    updateCartCount();
+
+    loadAnnouncements();
+
+});
