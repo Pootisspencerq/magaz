@@ -1,17 +1,21 @@
 /* =========================================================
-   VILKA — PROFILE
+   VILKA — ОСОБИСТИЙ КАБІНЕТ
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-    const loadingElement =
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const profileLoading =
         document.getElementById("profileLoading");
 
-    const contentElement =
-        document.getElementById("profileContent");
-
-    const errorElement =
+    const profileError =
         document.getElementById("profileError");
+
+    const profileContent =
+        document.getElementById("profileContent");
 
     const profileForm =
         document.getElementById("profileForm");
@@ -19,13 +23,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     const logoutButton =
         document.getElementById("logoutButton");
 
-    const saveButton =
+    const saveProfileButton =
         document.getElementById("saveProfileButton");
 
-    const saveButtonText =
+    const saveProfileText =
         document.getElementById("saveProfileText");
 
-    const saveSpinner =
+    const saveProfileSpinner =
         document.getElementById("saveProfileSpinner");
 
     const saveSuccess =
@@ -36,10 +40,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /* =====================================================
-       ПЕРЕВІРКА АВТОРИЗАЦІЇ
+       API
     ===================================================== */
 
-    if (!window.VilkaAuth || !VilkaAuth.isLoggedIn()) {
+    const API_BASE = "http://127.0.0.1:8000/api";
+    const AUTH_BASE = `${API_BASE}/accounts`;
+
+
+    /* =====================================================
+       CHECK AUTHORIZATION
+    ===================================================== */
+
+    if (
+        !window.VilkaAuth ||
+        !window.VilkaAuth.isLoggedIn()
+    ) {
 
         sessionStorage.setItem(
             "vilkaLoginRedirect",
@@ -53,352 +68,503 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /* =====================================================
-       ЗАВАНТАЖЕННЯ ПРОФІЛЮ
+       SHOW / HIDE MESSAGES
     ===================================================== */
 
-    let user;
+    function showError(message) {
 
-    try {
+        profileError.textContent = message;
 
-        user = await VilkaAuth.loadUser();
+        profileError.classList.remove("d-none");
+    }
 
-        if (!user) {
 
-            sessionStorage.setItem(
-                "vilkaLoginRedirect",
-                "profile.html"
-            );
+    function hideError() {
 
-            window.location.href =
-                "login.html";
+        profileError.textContent = "";
 
-            return;
-        }
+        profileError.classList.add("d-none");
+    }
 
-    } catch (error) {
 
-        console.error(
-            "Помилка завантаження профілю:",
-            error
-        );
+    function showSaveError(message) {
 
-        loadingElement.classList.add("d-none");
+        saveError.textContent = message;
 
-        errorElement.textContent =
-            "Не вдалося завантажити профіль.";
+        saveError.classList.remove("d-none");
+    }
 
-        errorElement.classList.remove("d-none");
 
-        return;
+    function hideSaveError() {
+
+        saveError.textContent = "";
+
+        saveError.classList.add("d-none");
+    }
+
+
+    function hideSaveSuccess() {
+
+        saveSuccess.classList.add("d-none");
     }
 
 
     /* =====================================================
-       ВІДОБРАЖЕННЯ ДАНИХ
+       FORMAT USER DATA
     ===================================================== */
 
-    fillProfile(user);
+    function getFullName(user) {
+
+        const firstName =
+            user.first_name || "";
+
+        const lastName =
+            user.last_name || "";
+
+        const fullName =
+            `${firstName} ${lastName}`.trim();
+
+        return fullName || user.username || "Користувач";
+    }
 
 
-    loadingElement.classList.add("d-none");
+    function getProfileValue(user, field) {
 
-    contentElement.classList.remove("d-none");
+        if (
+            user.profile &&
+            user.profile[field] !== undefined &&
+            user.profile[field] !== null
+        ) {
+            return user.profile[field];
+        }
+
+        return "";
+    }
 
 
     /* =====================================================
-       ЗБЕРЕЖЕННЯ
+       FILL PROFILE
     ===================================================== */
 
-    profileForm.addEventListener(
-        "submit",
-        async function (event) {
+    function fillProfile(user) {
 
-            event.preventDefault();
+        if (!user) {
+            return;
+        }
 
-            saveSuccess.classList.add("d-none");
-            saveError.classList.add("d-none");
+        /*
+         * Ліва картка профілю
+         */
 
-
-            const data = {
-
-                first_name:
-                    document
-                        .getElementById("firstName")
-                        .value
-                        .trim(),
-
-                last_name:
-                    document
-                        .getElementById("lastName")
-                        .value
-                        .trim(),
-
-                email:
-                    document
-                        .getElementById("email")
-                        .value
-                        .trim(),
-
-                profile: {
-
-                    phone:
-                        document
-                            .getElementById("phone")
-                            .value
-                            .trim(),
-
-                    city:
-                        document
-                            .getElementById("city")
-                            .value
-                            .trim()
-
-                }
-
-            };
+        document.getElementById(
+            "profileFullName"
+        ).textContent = getFullName(user);
 
 
-            saveButton.disabled = true;
+        document.getElementById(
+            "profileUsername"
+        ).textContent = `@${user.username || ""}`;
 
-            saveButtonText.textContent =
-                "Збереження...";
 
-            saveSpinner.classList.remove(
-                "d-none"
+        document.getElementById(
+            "profileEmail"
+        ).textContent = user.email || "Не вказано";
+
+
+        document.getElementById(
+            "profilePhone"
+        ).textContent =
+            getProfileValue(user, "phone") || "Не вказано";
+
+
+        document.getElementById(
+            "profileCity"
+        ).textContent =
+            getProfileValue(user, "city") || "Не вказано";
+
+
+        /*
+         * Форма редагування
+         */
+
+        document.getElementById(
+            "username"
+        ).value = user.username || "";
+
+
+        document.getElementById(
+            "firstName"
+        ).value = user.first_name || "";
+
+
+        document.getElementById(
+            "lastName"
+        ).value = user.last_name || "";
+
+
+        document.getElementById(
+            "email"
+        ).value = user.email || "";
+
+
+        document.getElementById(
+            "phone"
+        ).value = getProfileValue(user, "phone");
+
+
+        document.getElementById(
+            "city"
+        ).value = getProfileValue(user, "city");
+    }
+
+
+    /* =====================================================
+       LOAD PROFILE
+    ===================================================== */
+
+    async function loadProfile() {
+
+        hideError();
+
+        profileLoading.classList.remove("d-none");
+
+        profileContent.classList.add("d-none");
+
+        try {
+
+            const user =
+                await window.VilkaAuth.loadUser();
+
+            if (!user) {
+
+                sessionStorage.setItem(
+                    "vilkaLoginRedirect",
+                    "profile.html"
+                );
+
+                window.location.href = "login.html";
+
+                return;
+            }
+
+            fillProfile(user);
+
+            profileLoading.classList.add("d-none");
+
+            profileContent.classList.remove("d-none");
+
+        } catch (error) {
+
+            console.error(
+                "Помилка завантаження профілю:",
+                error
             );
 
+            profileLoading.classList.add("d-none");
 
-            try {
+            showError(
+                "Не вдалося завантажити профіль. Перевірте з'єднання із сервером."
+            );
+        }
+    }
 
-                const updatedUser =
-                    await apiRequest(
+
+    /* =====================================================
+       SAVE PROFILE
+    ===================================================== */
+
+    if (profileForm) {
+
+        profileForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                hideSaveError();
+
+                hideSaveSuccess();
+
+
+                /*
+                 * Отримуємо дані з форми
+                 */
+
+                const firstName =
+                    document.getElementById(
+                        "firstName"
+                    ).value.trim();
+
+
+                const lastName =
+                    document.getElementById(
+                        "lastName"
+                    ).value.trim();
+
+
+                const email =
+                    document.getElementById(
+                        "email"
+                    ).value.trim();
+
+
+                const phone =
+                    document.getElementById(
+                        "phone"
+                    ).value.trim();
+
+
+                const city =
+                    document.getElementById(
+                        "city"
+                    ).value.trim();
+
+
+                /*
+                 * Перевірка email
+                 */
+
+                if (!email) {
+
+                    showSaveError(
+                        "Будь ласка, введіть email."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Блокуємо кнопку
+                 */
+
+                saveProfileButton.disabled = true;
+
+                saveProfileText.textContent =
+                    "Збереження...";
+
+                saveProfileSpinner.classList.remove(
+                    "d-none"
+                );
+
+
+                try {
+
+                    /*
+                     * PATCH-запит до Django REST API
+                     */
+
+                    const response = await fetch(
                         `${AUTH_BASE}/me/`,
                         {
                             method: "PATCH",
 
-                            body: JSON.stringify(
-                                data
-                            )
+                            headers: {
+                                "Content-Type": "application/json",
+
+                                "Authorization":
+                                    `Token ${window.VilkaAuth.getToken()}`
+                            },
+
+                            body: JSON.stringify({
+
+                                first_name: firstName,
+
+                                last_name: lastName,
+
+                                email: email,
+
+                                profile: {
+                                    phone: phone,
+                                    city: city
+                                }
+
+                            })
                         }
                     );
 
 
-                /* Зберігаємо оновленого користувача */
+                    /*
+                     * Читаємо відповідь сервера
+                     */
 
-                localStorage.setItem(
-                    "vilkaUser",
-                    JSON.stringify(updatedUser)
-                );
+                    let data = {};
 
+                    try {
 
-                /* Оновлюємо сторінку */
+                        data = await response.json();
 
-                fillProfile(
-                    updatedUser
-                );
+                    } catch {
 
+                        data = {};
 
-                saveSuccess.classList.remove(
-                    "d-none"
-                );
+                    }
 
 
-            } catch (error) {
+                    /*
+                     * Перевіряємо помилки
+                     */
 
-                console.error(
-                    "Помилка збереження профілю:",
-                    error
-                );
+                    if (!response.ok) {
+
+                        let message =
+                            data.detail ||
+                            "Не вдалося зберегти зміни.";
+
+                        if (
+                            data.email &&
+                            Array.isArray(data.email)
+                        ) {
+                            message = data.email.join(" ");
+                        }
+
+                        if (
+                            data.profile &&
+                            typeof data.profile === "object"
+                        ) {
+                            message = Object.values(
+                                data.profile
+                            ).flat().join(" ");
+                        }
+
+                        throw new Error(message);
+                    }
 
 
-                saveError.innerHTML =
-                    getApiErrorMessage(
+                    /*
+                     * Оновлюємо користувача
+                     * в localStorage
+                     */
+
+                    localStorage.setItem(
+                        "vilkaUser",
+                        JSON.stringify(data)
+                    );
+
+
+                    /*
+                     * Оновлюємо інформацію на сторінці
+                     */
+
+                    fillProfile(data);
+
+
+                    /*
+                     * Оновлюємо ім'я у шапці,
+                     * якщо кнопка є на сторінці
+                     */
+
+                    if (
+                        typeof updateAuthHeader === "function"
+                    ) {
+                        await updateAuthHeader();
+                    }
+
+
+                    /*
+                     * Повідомлення про успіх
+                     */
+
+                    saveSuccess.textContent =
+                        "Дані успішно збережено.";
+
+                    saveSuccess.classList.remove(
+                        "d-none"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Помилка збереження профілю:",
                         error
                     );
 
-                saveError.classList.remove(
-                    "d-none"
-                );
+                    showSaveError(
+                        error.message ||
+                        "Сталася помилка під час збереження."
+                    );
 
+                } finally {
 
-            } finally {
+                    /*
+                     * Повертаємо кнопку
+                     */
 
-                saveButton.disabled = false;
+                    saveProfileButton.disabled = false;
 
-                saveButtonText.innerHTML =
-                    '<i class="bi bi-check2 me-2"></i>Зберегти зміни';
+                    saveProfileText.innerHTML =
+                        '<i class="bi bi-check2 me-2"></i>Зберегти зміни';
 
-                saveSpinner.classList.add(
-                    "d-none"
-                );
+                    saveProfileSpinner.classList.add(
+                        "d-none"
+                    );
+                }
 
             }
-
-        }
-    );
+        );
+    }
 
 
     /* =====================================================
        LOGOUT
     ===================================================== */
 
-    logoutButton.addEventListener(
-        "click",
-        async function () {
+    if (logoutButton) {
 
-            logoutButton.disabled = true;
+        logoutButton.addEventListener(
+            "click",
+            async function () {
 
-            logoutButton.innerHTML =
-                '<span class="spinner-border spinner-border-sm me-2"></span>Вихід...';
+                const confirmed = confirm(
+                    "Ви дійсно хочете вийти з акаунта?"
+                );
 
-            await VilkaAuth.logout();
+                if (!confirmed) {
+                    return;
+                }
 
-        }
-    );
+                logoutButton.disabled = true;
+
+                logoutButton.innerHTML = `
+                    <span
+                        class="spinner-border spinner-border-sm me-2"
+                        role="status"
+                    ></span>
+                    Вихід...
+                `;
+
+                try {
+
+                    await window.VilkaAuth.logout();
+
+                } catch (error) {
+
+                    console.error(
+                        "Помилка виходу:",
+                        error
+                    );
+
+                    /*
+                     * У разі помилки повертаємо кнопку.
+                     */
+
+                    logoutButton.disabled = false;
+
+                    logoutButton.innerHTML = `
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Вийти з акаунта
+                    `;
+                }
+            }
+        );
+    }
+
+
+    /* =====================================================
+       INITIALIZATION
+    ===================================================== */
+
+    loadProfile();
 
 });
-
-
-/* =========================================================
-   ЗАПОВНЕННЯ ПРОФІЛЮ
-========================================================= */
-
-function fillProfile(user) {
-
-    if (!user) {
-        return;
-    }
-
-
-    const profile =
-        user.profile || {};
-
-
-    /* =====================================================
-       FORM
-    ===================================================== */
-
-    const username =
-        document.getElementById("username");
-
-    const firstName =
-        document.getElementById("firstName");
-
-    const lastName =
-        document.getElementById("lastName");
-
-    const email =
-        document.getElementById("email");
-
-    const phone =
-        document.getElementById("phone");
-
-    const city =
-        document.getElementById("city");
-
-
-    if (username) {
-        username.value =
-            user.username || "";
-    }
-
-    if (firstName) {
-        firstName.value =
-            user.first_name || "";
-    }
-
-    if (lastName) {
-        lastName.value =
-            user.last_name || "";
-    }
-
-    if (email) {
-        email.value =
-            user.email || "";
-    }
-
-    if (phone) {
-        phone.value =
-            profile.phone || "";
-    }
-
-    if (city) {
-        city.value =
-            profile.city || "";
-    }
-
-
-    /* =====================================================
-       LEFT PROFILE CARD
-    ===================================================== */
-
-    const fullName =
-        document.getElementById(
-            "profileFullName"
-        );
-
-    const usernameElement =
-        document.getElementById(
-            "profileUsername"
-        );
-
-    const emailElement =
-        document.getElementById(
-            "profileEmail"
-        );
-
-    const phoneElement =
-        document.getElementById(
-            "profilePhone"
-        );
-
-    const cityElement =
-        document.getElementById(
-            "profileCity"
-        );
-
-
-    const fullNameText =
-        `${user.first_name || ""} ${user.last_name || ""}`
-            .trim();
-
-
-    if (fullName) {
-
-        fullName.textContent =
-            fullNameText ||
-            user.username ||
-            "Користувач";
-    }
-
-
-    if (usernameElement) {
-
-        usernameElement.textContent =
-            `@${user.username || ""}`;
-    }
-
-
-    if (emailElement) {
-
-        emailElement.textContent =
-            user.email || "Не вказано";
-    }
-
-
-    if (phoneElement) {
-
-        phoneElement.textContent =
-            profile.phone ||
-            "Не вказано";
-    }
-
-
-    if (cityElement) {
-
-        cityElement.textContent =
-            profile.city ||
-            "Не вказано";
-    }
-
-}

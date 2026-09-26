@@ -1,3 +1,7 @@
+/* ========================================
+   VILKA AUTH CONFIGURATION
+======================================== */
+
 const API_BASE = "http://127.0.0.1:8000/api";
 const AUTH_BASE = `${API_BASE}/accounts`;
 
@@ -20,6 +24,10 @@ function removeAuthToken() {
     localStorage.removeItem("vilkaToken");
 }
 
+
+/* ========================================
+   CURRENT USER
+======================================== */
 
 function getCurrentUser() {
     const user = localStorage.getItem("vilkaUser");
@@ -50,31 +58,32 @@ function removeCurrentUser() {
 
 
 /* ========================================
-   API
+   API REQUEST
 ======================================== */
 
-async function apiRequest(
-    url,
-    options = {}
-) {
+async function apiRequest(url, options = {}) {
+
     const token = getAuthToken();
 
     const headers = {
-        "Content-Type": "application/json",
         ...(options.headers || {})
     };
+
+    // Не встановлюємо Content-Type для FormData.
+    // Браузер сам додасть правильний multipart boundary.
+
+    if (!(options.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
+    }
 
     if (token) {
         headers["Authorization"] = `Token ${token}`;
     }
 
-    const response = await fetch(
-        url,
-        {
-            ...options,
-            headers
-        }
-    );
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
 
     let data = null;
 
@@ -105,6 +114,25 @@ async function apiRequest(
    ERROR MESSAGE
 ======================================== */
 
+function getFieldName(field) {
+
+    const names = {
+        username: "Логін",
+        email: "Email",
+        first_name: "Ім'я",
+        last_name: "Прізвище",
+        password: "Пароль",
+        password_confirm: "Підтвердження пароля",
+        phone: "Телефон",
+        city: "Місто",
+        non_field_errors: "Помилка",
+        detail: "Помилка"
+    };
+
+    return names[field] || field;
+}
+
+
 function getApiErrorMessage(error) {
 
     if (!error) {
@@ -121,52 +149,75 @@ function getApiErrorMessage(error) {
 
         const messages = [];
 
-        Object.entries(data).forEach(
-            ([field, value]) => {
+        Object.entries(data).forEach(([field, value]) => {
 
-                if (Array.isArray(value)) {
+            if (Array.isArray(value)) {
 
-                    value.forEach(message => {
-                        messages.push(
-                            `${getFieldName(field)}: ${message}`
-                        );
-                    });
-
-                } else {
+                value.forEach(message => {
 
                     messages.push(
-                        `${getFieldName(field)}: ${value}`
+                        `${getFieldName(field)}: ${message}`
                     );
 
-                }
+                });
+
+            } else if (typeof value === "object" && value !== null) {
+
+                Object.entries(value).forEach(([nestedField, nestedValue]) => {
+
+                    if (Array.isArray(nestedValue)) {
+
+                        nestedValue.forEach(message => {
+
+                            messages.push(
+                                `${getFieldName(nestedField)}: ${message}`
+                            );
+
+                        });
+
+                    } else {
+
+                        messages.push(
+                            `${getFieldName(nestedField)}: ${nestedValue}`
+                        );
+
+                    }
+
+                });
+
+            } else {
+
+                messages.push(
+                    `${getFieldName(field)}: ${value}`
+                );
 
             }
-        );
+
+        });
 
         if (messages.length) {
-            return messages.join("<br>");
+            return messages.join("\n");
         }
     }
 
-    return error.message ||
-        "Сталася помилка.";
+    return error.message || "Сталася помилка.";
 }
 
 
-function getFieldName(field) {
+/* ========================================
+   DISPLAY API ERROR
+======================================== */
 
-    const names = {
-        username: "Логін",
-        email: "Email",
-        first_name: "Ім'я",
-        last_name: "Прізвище",
-        password: "Пароль",
-        password_confirm: "Підтвердження пароля",
-        phone: "Телефон",
-        city: "Місто"
-    };
+function showApiError(element, error) {
 
-    return names[field] || field;
+    if (!element) {
+        console.error(error);
+        return;
+    }
+
+    element.textContent = getApiErrorMessage(error);
+
+    element.classList.remove("d-none");
 }
 
 
@@ -174,159 +225,105 @@ function getFieldName(field) {
    LOGIN
 ======================================== */
 
-const loginForm =
-    document.getElementById("loginForm");
-
+const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
 
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
+    loginForm.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            const username =
-                document
-                    .getElementById("username")
-                    .value
-                    .trim();
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
 
-            const password =
-                document
-                    .getElementById("password")
-                    .value;
+        const errorElement = document.getElementById("loginError");
+        const button = document.getElementById("loginButton");
+        const buttonText = document.getElementById("loginButtonText");
+        const spinner = document.getElementById("loginSpinner");
 
-            const errorElement =
-                document.getElementById(
-                    "loginError"
-                );
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
 
-            const button =
-                document.getElementById(
-                    "loginButton"
-                );
+        if (errorElement) {
+            errorElement.classList.add("d-none");
+            errorElement.textContent = "";
+        }
 
-            const buttonText =
-                document.getElementById(
-                    "loginButtonText"
-                );
-
-            const spinner =
-                document.getElementById(
-                    "loginSpinner"
-                );
-
-
-            errorElement.classList.add(
-                "d-none"
-            );
-
-            errorElement.innerHTML = "";
-
-
+        if (button) {
             button.disabled = true;
+        }
 
-            buttonText.textContent =
-                "Вхід...";
+        if (buttonText) {
+            buttonText.textContent = "Вхід...";
+        }
 
-            spinner.classList.remove(
-                "d-none"
+        if (spinner) {
+            spinner.classList.remove("d-none");
+        }
+
+        try {
+
+            const data = await apiRequest(
+                `${AUTH_BASE}/login/`,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }
             );
 
+            // Зберігаємо токен та користувача.
 
-            try {
+            saveAuthToken(data.token);
+            saveCurrentUser(data.user);
 
-                const data =
-                    await apiRequest(
-                        `${AUTH_BASE}/login/`,
-                        {
-                            method: "POST",
+            if (buttonText) {
+                buttonText.textContent = "Успішно!";
+            }
 
-                            body: JSON.stringify({
-                                username,
-                                password
-                            })
-                        }
-                    );
+            // Повертаємо користувача на сторінку,
+            // з якої він перейшов до входу.
 
+            const redirect = sessionStorage.getItem(
+                "vilkaLoginRedirect"
+            );
 
-                saveAuthToken(
-                    data.token
-                );
+            sessionStorage.removeItem("vilkaLoginRedirect");
 
-                saveCurrentUser(
-                    data.user
-                );
+            setTimeout(function () {
 
+                if (redirect) {
+                    window.location.href = redirect;
+                } else {
+                    window.location.href = "index.html";
+                }
 
-                buttonText.textContent =
-                    "Успішно!";
+            }, 500);
 
+        } catch (error) {
 
-                /*
-                 * Повертаємо користувача
-                 * на попередню сторінку,
-                 * якщо вона була перед входом.
-                 */
+            console.error("Помилка входу:", error);
 
-                const redirect =
-                    sessionStorage.getItem(
-                        "vilkaLoginRedirect"
-                    );
+            showApiError(errorElement, error);
 
-
-                sessionStorage.removeItem(
-                    "vilkaLoginRedirect"
-                );
-
-
-                setTimeout(
-                    function () {
-
-                        if (redirect) {
-                            window.location.href =
-                                redirect;
-                        } else {
-                            window.location.href =
-                                "index.html";
-                        }
-
-                    },
-                    500
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Помилка входу:",
-                    error
-                );
-
-
-                errorElement.innerHTML =
-                    getApiErrorMessage(
-                        error
-                    );
-
-                errorElement.classList.remove(
-                    "d-none"
-                );
-
-
+            if (button) {
                 button.disabled = false;
+            }
 
-                buttonText.textContent =
-                    "Увійти";
+            if (buttonText) {
+                buttonText.textContent = "Увійти";
+            }
 
-                spinner.classList.add(
-                    "d-none"
-                );
+            if (spinner) {
+                spinner.classList.add("d-none");
             }
 
         }
-    );
+
+    });
 
 }
 
@@ -335,213 +332,128 @@ if (loginForm) {
    REGISTER
 ======================================== */
 
-const registerForm =
-    document.getElementById(
-        "registerForm"
-    );
-
+const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
 
-    registerForm.addEventListener(
-        "submit",
-        async function (event) {
+    registerForm.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
+        const errorElement = document.getElementById("registerError");
+        const successElement = document.getElementById("registerSuccess");
 
-            const errorElement =
-                document.getElementById(
-                    "registerError"
-                );
+        if (errorElement) {
+            errorElement.classList.add("d-none");
+            errorElement.textContent = "";
+        }
 
-            const successElement =
-                document.getElementById(
-                    "registerSuccess"
-                );
+        if (successElement) {
+            successElement.classList.add("d-none");
+            successElement.textContent = "";
+        }
 
+        const formData = new FormData(registerForm);
 
-            errorElement.classList.add(
-                "d-none"
-            );
+        const username = (formData.get("username") || "").trim();
+        const email = (formData.get("email") || "").trim();
+        const firstName = (formData.get("first_name") || "").trim();
+        const lastName = (formData.get("last_name") || "").trim();
+        const password = formData.get("password") || "";
+        const passwordConfirm = formData.get("password_confirm") || "";
+        const phone = (formData.get("phone") || "").trim();
+        const city = (formData.get("city") || "").trim();
 
-            successElement.classList.add(
-                "d-none"
-            );
+        const data = {
+            username: username,
+            email: email,
+            first_name: firstName,
+            last_name: lastName,
+            password: password,
+            password_confirm: passwordConfirm,
+            phone: phone,
+            city: city
+        };
 
+        // Перевірка паролів.
 
-            const formData =
-                new FormData(
-                    registerForm
-                );
+        if (data.password !== data.password_confirm) {
 
-
-            const data = {
-
-                username:
-                    formData.get(
-                        "username"
-                    ).trim(),
-
-                email:
-                    formData.get(
-                        "email"
-                    ).trim(),
-
-                first_name:
-                    formData.get(
-                        "first_name"
-                    ).trim(),
-
-                last_name:
-                    formData.get(
-                        "last_name"
-                    ).trim(),
-
-                password:
-                    formData.get(
-                        "password"
-                    ),
-
-                password_confirm:
-                    formData.get(
-                        "password_confirm"
-                    ),
-
-                phone:
-                    formData.get(
-                        "phone"
-                    ).trim(),
-
-                city:
-                    formData.get(
-                        "city"
-                    ).trim()
-
-            };
-
-
-            if (
-                data.password !==
-                data.password_confirm
-            ) {
-
-                errorElement.innerHTML =
-                    "Паролі не збігаються.";
-
-                errorElement.classList.remove(
-                    "d-none"
-                );
-
-                return;
+            if (errorElement) {
+                errorElement.textContent = "Паролі не збігаються.";
+                errorElement.classList.remove("d-none");
             }
 
+            return;
+        }
 
-            const button =
-                document.getElementById(
-                    "registerButton"
-                );
+        const button = document.getElementById("registerButton");
+        const buttonText = document.getElementById("registerButtonText");
+        const spinner = document.getElementById("registerSpinner");
 
-            const buttonText =
-                document.getElementById(
-                    "registerButtonText"
-                );
-
-            const spinner =
-                document.getElementById(
-                    "registerSpinner"
-                );
-
-
+        if (button) {
             button.disabled = true;
+        }
 
-            buttonText.textContent =
-                "Реєстрація...";
+        if (buttonText) {
+            buttonText.textContent = "Реєстрація...";
+        }
 
-            spinner.classList.remove(
-                "d-none"
+        if (spinner) {
+            spinner.classList.remove("d-none");
+        }
+
+        try {
+
+            const response = await apiRequest(
+                `${AUTH_BASE}/register/`,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify(data)
+                }
             );
 
+            // Django повертає токен і дані користувача
+            // одразу після успішної реєстрації.
 
-            try {
+            saveAuthToken(response.token);
+            saveCurrentUser(response.user);
 
-                const response =
-                    await apiRequest(
-                        `${AUTH_BASE}/register/`,
-                        {
-                            method: "POST",
-
-                            body: JSON.stringify(
-                                data
-                            )
-                        }
-                    );
-
-
-                /*
-                 * Django одразу повертає
-                 * token після реєстрації.
-                 */
-
-                saveAuthToken(
-                    response.token
-                );
-
-                saveCurrentUser(
-                    response.user
-                );
-
-
-                successElement.innerHTML =
+            if (successElement) {
+                successElement.textContent =
                     "Реєстрацію успішно завершено! Перенаправлення...";
 
-                successElement.classList.remove(
-                    "d-none"
-                );
+                successElement.classList.remove("d-none");
+            }
 
+            registerForm.reset();
 
-                registerForm.reset();
+            setTimeout(function () {
+                window.location.href = "index.html";
+            }, 1000);
 
+        } catch (error) {
 
-                setTimeout(
-                    function () {
-                        window.location.href =
-                            "index.html";
-                    },
-                    1000
-                );
+            console.error("Помилка реєстрації:", error);
 
+            showApiError(errorElement, error);
 
-            } catch (error) {
-
-                console.error(
-                    "Помилка реєстрації:",
-                    error
-                );
-
-
-                errorElement.innerHTML =
-                    getApiErrorMessage(
-                        error
-                    );
-
-                errorElement.classList.remove(
-                    "d-none"
-                );
-
-
+            if (button) {
                 button.disabled = false;
+            }
 
-                buttonText.textContent =
-                    "Зареєструватися";
+            if (buttonText) {
+                buttonText.textContent = "Зареєструватися";
+            }
 
-                spinner.classList.add(
-                    "d-none"
-                );
+            if (spinner) {
+                spinner.classList.add("d-none");
             }
 
         }
-    );
+
+    });
 
 }
 
@@ -550,67 +462,50 @@ if (registerForm) {
    PASSWORD TOGGLE
 ======================================== */
 
-document
-    .querySelectorAll(
-        ".password-toggle"
-    )
-    .forEach(
-        function (button) {
+document.querySelectorAll(".password-toggle").forEach(function (button) {
 
-            button.addEventListener(
-                "click",
-                function () {
+    button.addEventListener("click", function () {
 
-                    const targetId =
-                        button.dataset.target ||
-                        "password";
+        const targetId = button.dataset.target || "password";
 
-                    const input =
-                        document.getElementById(
-                            targetId
-                        );
+        const input = document.getElementById(targetId);
 
-                    if (!input) {
-                        return;
-                    }
+        if (!input) {
+            return;
+        }
 
+        if (input.type === "password") {
 
-                    if (
-                        input.type ===
-                        "password"
-                    ) {
+            input.type = "text";
 
-                        input.type =
-                            "text";
+            button.innerHTML =
+                '<i class="bi bi-eye-slash"></i>';
 
-                        button.innerHTML =
-                            '<i class="bi bi-eye-slash"></i>';
+            button.setAttribute("aria-label", "Приховати пароль");
 
-                    } else {
+        } else {
 
-                        input.type =
-                            "password";
+            input.type = "password";
 
-                        button.innerHTML =
-                            '<i class="bi bi-eye"></i>';
-                    }
+            button.innerHTML =
+                '<i class="bi bi-eye"></i>';
 
-                }
-            );
+            button.setAttribute("aria-label", "Показати пароль");
 
         }
-    );
+
+    });
+
+});
 
 
 /* ========================================
-   GLOBAL AUTH HELPERS
+   LOGOUT
 ======================================== */
 
 async function logoutUser() {
 
-    const token =
-        getAuthToken();
-
+    const token = getAuthToken();
 
     try {
 
@@ -635,14 +530,18 @@ async function logoutUser() {
     } finally {
 
         removeAuthToken();
-
         removeCurrentUser();
 
-        window.location.href =
-            "index.html";
+        window.location.href = "index.html";
+
     }
+
 }
 
+
+/* ========================================
+   LOAD CURRENT USER
+======================================== */
 
 async function loadCurrentUser() {
 
@@ -650,36 +549,38 @@ async function loadCurrentUser() {
         return null;
     }
 
-
     try {
 
-        const user =
-            await apiRequest(
-                `${AUTH_BASE}/me/`
-            );
-
-
-        saveCurrentUser(
-            user
+        const user = await apiRequest(
+            `${AUTH_BASE}/me/`
         );
 
+        saveCurrentUser(user);
 
         return user;
 
     } catch (error) {
 
         console.warn(
-            "Токен недійсний:",
+            "Не вдалося завантажити користувача:",
             error
         );
 
+        // Видаляємо локальну авторизацію
+        // лише якщо сервер відхилив токен.
 
-        removeAuthToken();
-
-        removeCurrentUser();
+        if (
+            error.status === 401 ||
+            error.status === 403
+        ) {
+            removeAuthToken();
+            removeCurrentUser();
+        }
 
         return null;
+
     }
+
 }
 
 
@@ -689,66 +590,91 @@ async function loadCurrentUser() {
 
 async function updateAuthHeader() {
 
-    const token =
-        getAuthToken();
+    const loginButtons = document.querySelectorAll(
+        ".header-login-button"
+    );
 
-
-    const loginButtons =
-        document.querySelectorAll(
-            ".header-login-button"
-        );
-
-
-    if (!token) {
-
-        loginButtons.forEach(
-            button => {
-                button.innerHTML =
-                    '<i class="bi bi-person"></i> Увійти';
-
-                button.href =
-                    "login.html";
-            }
-        );
-
+    if (!loginButtons.length) {
         return;
     }
 
+    // Кнопка для незареєстрованого користувача.
 
-    const user =
-        getCurrentUser();
+    function showLoginButton() {
 
+        loginButtons.forEach(button => {
 
-    if (!user) {
+            button.href = "login.html";
+            button.innerHTML = "";
 
-        await loadCurrentUser();
+            const icon = document.createElement("i");
+            icon.className = "bi bi-person me-2";
+
+            button.appendChild(icon);
+
+            button.appendChild(
+                document.createTextNode("Увійти")
+            );
+
+        });
+
     }
 
+    // Якщо токена немає — показуємо «Увійти».
 
-    const currentUser =
-        getCurrentUser();
+    if (!getAuthToken()) {
+        showLoginButton();
+        return;
+    }
 
+    // Беремо користувача з localStorage.
+
+    let currentUser = getCurrentUser();
+
+    // Якщо локальних даних немає,
+    // завантажуємо їх із Django.
 
     if (!currentUser) {
+        currentUser = await loadCurrentUser();
+    }
+
+    // Якщо користувач не завантажився,
+    // повертаємо кнопку входу.
+
+    if (!currentUser) {
+        showLoginButton();
         return;
     }
 
+    // Ім'я для кнопки.
 
-    loginButtons.forEach(
-        button => {
+    const displayName =
+        currentUser.first_name ||
+        currentUser.username ||
+        "Мій профіль";
 
-            button.innerHTML =
-                `
-                <i class="bi bi-person-circle"></i>
-                ${currentUser.first_name || currentUser.username}
-                `;
+    loginButtons.forEach(button => {
 
-            button.href =
-                "profile.html";
-        }
-    );
+        button.href = "profile.html";
+        button.innerHTML = "";
+
+        const icon = document.createElement("i");
+        icon.className = "bi bi-person-circle me-2";
+
+        button.appendChild(icon);
+
+        button.appendChild(
+            document.createTextNode(displayName)
+        );
+
+    });
+
 }
 
+
+/* ========================================
+   INITIALIZE AUTH HEADER
+======================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -771,13 +697,13 @@ window.VilkaAuth = {
     getUser: getCurrentUser,
 
     isLoggedIn: function () {
-        return Boolean(
-            getAuthToken()
-        );
+        return Boolean(getAuthToken());
     },
 
     logout: logoutUser,
 
-    loadUser: loadCurrentUser
+    loadUser: loadCurrentUser,
+
+    updateHeader: updateAuthHeader
 
 };
