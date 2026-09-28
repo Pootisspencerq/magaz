@@ -1,18 +1,30 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from .models import Order
 from .serializers import OrderSerializer
 
 
 class OrderCreateView(generics.CreateAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class OrderListView(generics.ListAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = Order.objects.prefetch_related("items__product").all()
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return qs
+        return qs.filter(user=self.request.user)
 
 
 class OrderDetailView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = Order.objects.prefetch_related("items__product").all()
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return qs
+        return qs.filter(user=self.request.user)

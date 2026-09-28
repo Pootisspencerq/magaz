@@ -745,8 +745,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         method: "POST",
 
                         headers: {
-                            "Content-Type":
-                                "application/json"
+                            "Content-Type": "application/json",
+                            ...(window.VilkaAuth?.getToken?.()
+                                ? { "Authorization": `Token ${window.VilkaAuth.getToken()}` }
+                                : {})
                         },
 
                         body:

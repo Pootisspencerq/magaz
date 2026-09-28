@@ -1,3 +1,4 @@
+
 /* =========================================================
    VILKA — ОСОБИСТИЙ КАБІНЕТ
 ========================================================= */
@@ -74,38 +75,39 @@ document.addEventListener("DOMContentLoaded", function () {
     function showError(message) {
 
         profileError.textContent = message;
-
         profileError.classList.remove("d-none");
+
     }
 
 
     function hideError() {
 
         profileError.textContent = "";
-
         profileError.classList.add("d-none");
+
     }
 
 
     function showSaveError(message) {
 
         saveError.textContent = message;
-
         saveError.classList.remove("d-none");
+
     }
 
 
     function hideSaveError() {
 
         saveError.textContent = "";
-
         saveError.classList.add("d-none");
+
     }
 
 
     function hideSaveSuccess() {
 
         saveSuccess.classList.add("d-none");
+
     }
 
 
@@ -125,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `${firstName} ${lastName}`.trim();
 
         return fullName || user.username || "Користувач";
+
     }
 
 
@@ -139,6 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return "";
+
     }
 
 
@@ -215,6 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById(
             "city"
         ).value = getProfileValue(user, "city");
+
     }
 
 
@@ -227,10 +232,14 @@ document.addEventListener("DOMContentLoaded", function () {
         hideError();
 
         profileLoading.classList.remove("d-none");
-
         profileContent.classList.add("d-none");
 
         try {
+
+            /*
+             * Завантажуємо актуальні дані
+             * через наявну функцію auth.js.
+             */
 
             const user =
                 await window.VilkaAuth.loadUser();
@@ -250,7 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
             fillProfile(user);
 
             profileLoading.classList.add("d-none");
-
             profileContent.classList.remove("d-none");
 
         } catch (error) {
@@ -265,7 +273,9 @@ document.addEventListener("DOMContentLoaded", function () {
             showError(
                 "Не вдалося завантажити профіль. Перевірте з'єднання із сервером."
             );
+
         }
+
     }
 
 
@@ -282,7 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.preventDefault();
 
                 hideSaveError();
-
                 hideSaveSuccess();
 
 
@@ -335,6 +344,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 /*
+                 * Перевірка авторизації
+                 */
+
+                if (!window.VilkaAuth.getToken()) {
+
+                    showSaveError(
+                        "Ваша сесія завершилася. Увійдіть знову."
+                    );
+
+                    return;
+                }
+
+
+                /*
                  * Блокуємо кнопку
                  */
 
@@ -351,20 +374,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 try {
 
                     /*
-                     * PATCH-запит до Django REST API
+                     * PATCH-запит до Django REST API.
+                     *
+                     * Використовуємо apiRequest()
+                     * з auth.js, щоб автоматично
+                     * передати токен і обробити помилки.
                      */
 
-                    const response = await fetch(
+                    const data = await apiRequest(
                         `${AUTH_BASE}/me/`,
                         {
                             method: "PATCH",
-
-                            headers: {
-                                "Content-Type": "application/json",
-
-                                "Authorization":
-                                    `Token ${window.VilkaAuth.getToken()}`
-                            },
 
                             body: JSON.stringify({
 
@@ -385,84 +405,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     /*
-                     * Читаємо відповідь сервера
+                     * Зберігаємо актуальні дані
+                     * користувача в localStorage.
                      */
 
-                    let data = {};
-
-                    try {
-
-                        data = await response.json();
-
-                    } catch {
-
-                        data = {};
-
-                    }
+                    saveCurrentUser(data);
 
 
                     /*
-                     * Перевіряємо помилки
-                     */
-
-                    if (!response.ok) {
-
-                        let message =
-                            data.detail ||
-                            "Не вдалося зберегти зміни.";
-
-                        if (
-                            data.email &&
-                            Array.isArray(data.email)
-                        ) {
-                            message = data.email.join(" ");
-                        }
-
-                        if (
-                            data.profile &&
-                            typeof data.profile === "object"
-                        ) {
-                            message = Object.values(
-                                data.profile
-                            ).flat().join(" ");
-                        }
-
-                        throw new Error(message);
-                    }
-
-
-                    /*
-                     * Оновлюємо користувача
-                     * в localStorage
-                     */
-
-                    localStorage.setItem(
-                        "vilkaUser",
-                        JSON.stringify(data)
-                    );
-
-
-                    /*
-                     * Оновлюємо інформацію на сторінці
+                     * Оновлюємо інформацію
+                     * на сторінці.
                      */
 
                     fillProfile(data);
 
 
                     /*
-                     * Оновлюємо ім'я у шапці,
-                     * якщо кнопка є на сторінці
+                     * Оновлюємо ім'я у шапці.
                      */
 
-                    if (
-                        typeof updateAuthHeader === "function"
-                    ) {
-                        await updateAuthHeader();
-                    }
+                    await window.VilkaAuth.updateHeader();
 
 
                     /*
-                     * Повідомлення про успіх
+                     * Повідомлення про успіх.
                      */
 
                     saveSuccess.textContent =
@@ -480,10 +446,18 @@ document.addEventListener("DOMContentLoaded", function () {
                         error
                     );
 
-                    showSaveError(
-                        error.message ||
-                        "Сталася помилка під час збереження."
-                    );
+                    /*
+                     * Форматуємо помилку
+                     * через функцію з auth.js.
+                     */
+
+                    const message =
+                        typeof getApiErrorMessage === "function"
+                            ? getApiErrorMessage(error)
+                            : error.message ||
+                              "Сталася помилка під час збереження.";
+
+                    showSaveError(message);
 
                 } finally {
 
@@ -499,10 +473,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     saveProfileSpinner.classList.add(
                         "d-none"
                     );
+
                 }
 
             }
         );
+
     }
 
 
@@ -536,6 +512,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 try {
 
+                    /*
+                     * Використовуємо logout
+                     * із наявного auth.js.
+                     *
+                     * Функція сама очистить токен
+                     * і перенаправить на index.html.
+                     */
+
                     await window.VilkaAuth.logout();
 
                 } catch (error) {
@@ -545,19 +529,18 @@ document.addEventListener("DOMContentLoaded", function () {
                         error
                     );
 
-                    /*
-                     * У разі помилки повертаємо кнопку.
-                     */
-
                     logoutButton.disabled = false;
 
                     logoutButton.innerHTML = `
                         <i class="bi bi-box-arrow-right me-2"></i>
                         Вийти з акаунта
                     `;
+
                 }
+
             }
         );
+
     }
 
 

@@ -639,6 +639,61 @@ document.addEventListener("DOMContentLoaded", () => {
             date
         );
 
+        // Керування власним оголошенням / адміністратором
+        if (item.is_owner || item.is_admin) {
+            const actions = document.createElement("div");
+            actions.className = "d-flex gap-2 mt-3";
+
+            const editButton = document.createElement("button");
+            editButton.type = "button";
+            editButton.className = "btn btn-sm btn-outline-secondary";
+            editButton.innerHTML = '<i class="bi bi-pencil me-1"></i> Редагувати';
+            editButton.addEventListener("click", async () => {
+                const newTitle = prompt("Назва:", item.title);
+                if (newTitle === null) return;
+                const newPrice = prompt("Ціна:", item.price);
+                if (newPrice === null) return;
+                const newDescription = prompt("Опис:", item.description);
+                if (newDescription === null) return;
+                const token = window.VilkaAuth?.getToken?.();
+                if (!token) return alert("Увійдіть в акаунт.");
+                const response = await fetch(`${ANNOUNCEMENTS_URL}${item.id}/`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", "Authorization": `Token ${token}` },
+                    body: JSON.stringify({ title: newTitle, price: newPrice, description: newDescription })
+                });
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    alert(data.detail || "Не вдалося відредагувати оголошення.");
+                    return;
+                }
+                await loadAnnouncements();
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "btn btn-sm btn-outline-danger";
+            deleteButton.innerHTML = '<i class="bi bi-trash me-1"></i> Видалити';
+            deleteButton.addEventListener("click", async () => {
+                if (!confirm(`Видалити «${item.title}»?`)) return;
+                const token = window.VilkaAuth?.getToken?.();
+                if (!token) return alert("Увійдіть в акаунт.");
+                const response = await fetch(`${ANNOUNCEMENTS_URL}${item.id}/delete/`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Token ${token}` }
+                });
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    alert(data.detail || "Не вдалося видалити оголошення.");
+                    return;
+                }
+                await loadAnnouncements();
+            });
+
+            actions.append(editButton, deleteButton);
+            body.appendChild(actions);
+        }
+
 
         card.append(
             imageBlock,
@@ -968,11 +1023,18 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
+            const token = window.VilkaAuth?.getToken?.();
+
+            if (!token) {
+                throw new Error("Щоб створити оголошення, увійдіть у свій акаунт.");
+            }
+
             const response =
                 await fetch(
                     `${ANNOUNCEMENTS_URL}create/`,
                     {
                         method: "POST",
+                        headers: { "Authorization": `Token ${token}` },
                         body: formData
                     }
                 );
@@ -1176,7 +1238,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showCreateButton.addEventListener(
             "click",
-            showCreateForm
+            () => {
+                if (!window.VilkaAuth?.getToken?.()) {
+                    alert("Щоб створити оголошення, спочатку увійдіть у свій акаунт.");
+                    window.location.href = "login.html";
+                    return;
+                }
+                showCreateForm();
+            }
         );
 
     }

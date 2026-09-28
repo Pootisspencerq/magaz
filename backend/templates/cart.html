@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Кошик | VILKA</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Основні стилі -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Стилі кошика -->
+    <link rel="stylesheet" href="/static/css/checkout.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         ШАПКА
+    ====================================================== -->
+
+    <header class="bg-white border-bottom">
+
+        <div class="container py-3">
+
+            <div class="row align-items-center g-3">
+
+                <!-- ЛОГОТИП -->
+
+                <div class="col-12 col-lg-3">
+
+                    <a
+                        href="/"
+                        class="vilka-logo"
+                    >
+
+                        <img
+                            src="/static/img/vilka-logo.png"
+                            alt="VILKA"
+                        >
+
+                    </a>
+
+                </div>
+
+                <!-- ПОШУК -->
+
+                <div class="col-12 col-lg-6">
+
+                    <input
+                        type="text"
+                        id="search"
+                        class="form-control form-control-lg"
+                        placeholder="Пошук товарів..."
+                    >
+
+                </div>
+
+                <!-- КОШИК -->
+
+                <div class="col-12 col-lg-3">
+
+                    <button
+                        id="cartButton"
+                        class="btn btn-orange btn-lg w-100"
+                        type="button"
+                    >
+
+                        <i class="bi bi-cart3 me-2"></i>
+
+                        Кошик
+
+                        <span
+                            id="cartCount"
+                            class="badge bg-dark"
+                        >
+                            0
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- НАВІГАЦІЯ -->
+
+            <nav class="navbar navbar-expand-lg mt-3 p-0">
+
+                <div class="container-fluid p-0">
+
+                    <!-- КНОПКА МОБІЛЬНОГО МЕНЮ -->
+
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavigation"
+                        aria-controls="mainNavigation"
+                        aria-expanded="false"
+                        aria-label="Відкрити меню"
+                    >
+
+                        <i class="bi bi-list"></i>
+
+                    </button>
+
+                    <!-- МЕНЮ -->
+
+                    <div
+                        class="collapse navbar-collapse"
+                        id="mainNavigation"
+                    >
+
+                        <ul class="navbar-nav gap-lg-2">
+
+                            <!-- КАТАЛОГ -->
+
+                            <li class="nav-item dropdown">
+
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+
+                                    <i class="bi bi-grid me-1"></i>
+                                    Каталог
+
+                                </a>
+
+                                <ul class="dropdown-menu">
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="/"
+                                        >
+                                            <i class="bi bi-grid me-2"></i>
+                                            Усі товари
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="/?category=computers"
+                                        >
+                                            <i class="bi bi-pc-display me-2"></i>
+                                            Комп'ютери
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="/?category=phones"
+                                        >
+                                            <i class="bi bi-phone me-2"></i>
+                                            Телефони
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="/?category=laptops"
+                                        >
+                                            <i class="bi bi-laptop me-2"></i>
+                                            Ноутбуки
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="/?category=accessories"
+                                        >
+                                            <i class="bi bi-headphones me-2"></i>
+                                            Аксесуари
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <!-- ОГОЛОШЕННЯ -->
+
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="/announcements.html"
+                                >
+
+                                    <i class="bi bi-megaphone me-1"></i>
+                                    Оголошення
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- =====================================================
+         ОСНОВНИЙ КОНТЕНТ
+    ====================================================== -->
+
+    <main class="container py-5">
+
+        <!-- ЗАГОЛОВОК -->
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+            <h1 class="fw-bold mb-0">
+
+                <i class="bi bi-cart3 me-2"></i>
+                Кошик
+
+            </h1>
+
+            <a
+                href="/"
+                class="btn btn-outline-light"
+            >
+
+                <i class="bi bi-arrow-left me-2"></i>
+                До каталогу
+
+            </a>
+
+        </div>
+
+        <!-- =================================================
+             ПОРОЖНІЙ КОШИК
+        ================================================== -->
+
+        <div
+            id="emptyCart"
+            class="cart-empty text-center"
+            style="display: none;"
+        >
+
+            <div class="empty-cart-icon">
+
+                <i class="bi bi-cart-x"></i>
+
+            </div>
+
+            <h2>
+                Ваш кошик порожній
+            </h2>
+
+            <p>
+                Додайте товари, щоб вони з'явилися тут.
+            </p>
+
+            <a
+                href="/"
+                class="btn btn-orange"
+            >
+
+                <i class="bi bi-shop me-2"></i>
+                Перейти до каталогу
+
+            </a>
+
+        </div>
+
+        <!-- =================================================
+             ВМІСТ КОШИКА
+        ================================================== -->
+
+        <div
+            id="cartContent"
+            style="display: none;"
+        >
+
+            <div class="row g-4">
+
+                <!-- ТОВАРИ -->
+
+                <div class="col-12 col-lg-8">
+
+                    <div id="cartItems"></div>
+
+                    <button
+                        id="clearCartButton"
+                        class="btn btn-outline-danger mt-3"
+                        type="button"
+                    >
+
+                        <i class="bi bi-trash3 me-2"></i>
+                        Очистити кошик
+
+                    </button>
+
+                </div>
+
+                <!-- ПІДСУМОК -->
+
+                <div class="col-12 col-lg-4">
+
+                    <div class="cart-summary">
+
+                        <h3>
+
+                            <i class="bi bi-receipt me-2"></i>
+                            Підсумок
+
+                        </h3>
+
+                        <hr>
+
+                        <!-- КІЛЬКІСТЬ -->
+
+                        <div class="summary-row">
+
+                            <span>
+                                Товарів:
+                            </span>
+
+                            <strong id="cartProductsCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                        <!-- ВАРТІСТЬ -->
+
+                        <div class="summary-row">
+
+                            <span>
+                                Вартість:
+                            </span>
+
+                            <strong id="cartTotal">
+                                0 грн
+                            </strong>
+
+                        </div>
+
+                        <hr>
+
+                        <!-- РАЗОМ -->
+
+                        <div class="summary-total">
+
+                            <span>
+                                Разом:
+                            </span>
+
+                            <strong id="cartGrandTotal">
+                                0 грн
+                            </strong>
+
+                        </div>
+
+                        <!-- ОФОРМИТИ ЗАМОВЛЕННЯ -->
+
+                        <button
+                            id="checkoutButton"
+                            class="btn btn-orange btn-lg w-100 mt-4"
+                            type="button"
+                        >
+
+                            <i class="bi bi-credit-card me-2"></i>
+                            Оформити замовлення
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="bg-dark text-white text-center py-4">
+
+        <p class="mb-0">
+            © 2026 VILKA
+        </p>
+
+    </footer>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <!-- Bootstrap JS -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+    <!-- Скрипт кошика -->
+    <script src="/static/js/cart.js"></script>
+
+</body>
+
+</html>

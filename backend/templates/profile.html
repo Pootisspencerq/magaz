@@ -15,7 +15,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
     <title>Особистий кабінет — VILKA</title>
 </head>
@@ -36,7 +36,7 @@
                     class="logo vilka-logo"
                 >
                     <img
-                        src="img/vilka-logo.png"
+                        src="/static/img/vilka-logo.png"
                         alt="VILKA"
                     >
                 </a>
@@ -548,6 +548,18 @@
             </div>
 
 
+            <!-- Історія замовлень -->
+            <section class="mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h4 mb-0">Історія замовлень</h2>
+                    <span id="ordersCount" class="badge bg-dark">0</span>
+                </div>
+                <div id="ordersLoading" class="text-muted">Завантаження...</div>
+                <div id="ordersError" class="alert alert-danger d-none"></div>
+                <div id="ordersEmpty" class="text-muted d-none">У вас ще немає замовлень.</div>
+                <div id="ordersList" class="row g-3"></div>
+            </section>
+
             <!-- Додаткові розділи -->
 
             <div class="row g-4 mt-1">
@@ -634,10 +646,11 @@
 ></script>
 
 <!-- Авторизація -->
-<script src="js/auth.js"></script>
+<script src="/static/js/auth.js"></script>
 
 <!-- Кабінет -->
-<script src="js/profile.js"></script>
+<script src="/static/js/profile.js"></script>
+<script src="/static/js/orders-history.js"></script>
 
 </body>
 
